@@ -19,7 +19,7 @@ const PaymentMethods = () => {
         {paymentImages.map(({ file, alt }) => (
           <div className="payment-card" key={file}>
             <img
-              src={`/image/${file}`}
+              src={`${import.meta.env.BASE_URL}image/${file}`}
               alt={alt}
               loading="lazy"
               className="payment-card-image"
