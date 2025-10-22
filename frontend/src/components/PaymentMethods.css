@@ -1,0 +1,166 @@
+.payment-methods {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.payment-main {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  width: 14em;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.payment-main_back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+  transform: translate(-50%, -50%) rotate(90deg);
+  width: 11em;
+  height: 11em;
+  background: linear-gradient(270deg, #03a9f4, #cc39a4, #ffb5d2);
+  z-index: -2;
+  box-shadow: inset 0px 0px 180px 5px #ffffff;
+}
+
+.payment-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-top-left-radius: 10px;
+  background: rgba(255, 255, 255, 0.596);
+  transition: 0.4s ease-in-out, 0.2s background-color ease-in-out,
+    0.2s background-image ease-in-out;
+  backdrop-filter: blur(5px);
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.payment-card-image {
+  max-width: 55px;
+  max-height: 40px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: 0.2s ease-in-out;
+}
+
+.payment-card:nth-child(2) {
+  border-radius: 0px;
+}
+
+.payment-card:nth-child(3) {
+  border-top-right-radius: 10px;
+  border-top-left-radius: 0px;
+}
+
+.payment-card:nth-child(4) {
+  border-radius: 0px;
+}
+
+.payment-card:nth-child(5) {
+  border-radius: 0px;
+}
+
+.payment-card:nth-child(6) {
+  border-radius: 0px;
+}
+
+.payment-card:nth-child(7) {
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 0px;
+}
+
+.payment-card:nth-child(8) {
+  border-radius: 0px;
+}
+
+.payment-card:nth-child(9) {
+  border-bottom-right-radius: 10px;
+  border-top-left-radius: 0px;
+}
+
+.payment-main:hover {
+  width: 14em;
+  cursor: pointer;
+}
+
+.payment-main:hover .payment-main_back {
+  opacity: 0;
+}
+
+.payment-main:hover .payment-card {
+  margin: 0.2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-main:hover .payment-card-image {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.payment-main:hover .payment-text {
+  opacity: 0;
+  z-index: -3;
+}
+
+.payment-card:nth-child(1):hover {
+  background-color: #0057b8;
+}
+
+.payment-card:nth-child(2):hover {
+  background-color: #1a1f71;
+}
+
+.payment-card:nth-child(3):hover {
+  background-color: #eb001b;
+}
+
+.payment-card:nth-child(4):hover {
+  background-color: #000000;
+}
+
+.payment-card:nth-child(5):hover {
+  animation: paymentBackgroundIMG 0.1s forwards;
+}
+
+.payment-card:nth-child(6):hover {
+  background-color: #742384;
+}
+
+.payment-card:nth-child(7):hover {
+  background-color: #3d348b;
+}
+
+.payment-card:nth-child(8):hover {
+  background-color: #003087;
+}
+
+.payment-card:nth-child(9):hover {
+  background-color: rgb(52, 168, 83);
+}
+
+@keyframes paymentBackgroundIMG {
+  100% {
+    background-image: linear-gradient(#bf66ff, #6248ff, #00ddeb);
+  }
+}
+
+.payment-text {
+  position: absolute;
+  font-size: 0.7em;
+  transition: 0.4s ease-in-out;
+  color: black;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  z-index: 3;
+}
