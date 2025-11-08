@@ -1,3 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=El+Messiri:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+        :root {
+                color-scheme: light;
+                --royal-bg: #f7f4ef;
+                --royal-ink: #1e1e1e;
+                --royal-muted: #7a7278;
+        }
+
+        html {
+                scroll-behavior: smooth;
+        }
+
+        body {
+                @apply bg-kingdom-ivory text-kingdom-charcoal font-royal antialiased leading-relaxed;
+        }
+
+        ::selection {
+                background: rgba(212, 175, 55, 0.35);
+                color: var(--royal-ink);
+        }
+}
+
+@layer components {
+        .focus-outline {
+                @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kingdom-gold;
+        }
+}
+
+@layer utilities {
+        .transition-royal {
+                @apply transition duration-220 ease-out;
+        }
+}

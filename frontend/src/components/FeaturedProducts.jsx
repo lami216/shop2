@@ -4,6 +4,7 @@ import useTranslation from "../hooks/useTranslation";
 import { useCartStore } from "../stores/useCartStore";
 import { formatMRU } from "../lib/formatMRU";
 import { getProductPricing } from "../lib/getProductPricing";
+import { getReadableTextColor } from "../lib/colorUtils";
 
 const FeaturedProducts = ({ featuredProducts }) => {
         const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,18 +51,24 @@ const FeaturedProducts = ({ featuredProducts }) => {
         const isStartDisabled = currentIndex === 0;
         const isEndDisabled = currentIndex >= Math.max(totalItems - itemsPerPage, 0);
 
+        const cardBackground = "#FFFFFF";
+        const adaptiveText = getReadableTextColor(cardBackground);
+
         return (
-                <div className='py-12'>
-                        <div className='container mx-auto px-4'>
-                                <h2 className='mb-4 text-center text-5xl font-bold sm:text-6xl'>
-                                        <span className='bg-gradient-to-r from-payzone-gold via-payzone-gold/80 to-payzone-indigo bg-clip-text text-transparent'>
+                <section className='rounded-[2.25rem] border border-kingdom-purple/10 bg-gradient-to-br from-white/90 via-kingdom-ivory to-kingdom-cream/80 px-4 py-16 shadow-[0_30px_60px_-36px_rgba(58,31,75,0.45)] sm:px-8'>
+                        <div className='mx-auto max-w-6xl'>
+                                <div className='text-center'>
+                                        <h2 className='text-3xl font-semibold tracking-[0.2em] text-kingdom-purple sm:text-4xl'>
                                                 {t("home.featuredTitle")}
-                                        </span>
-                                </h2>
-                                <div className='relative'>
-                                        <div className='overflow-hidden'>
+                                        </h2>
+                                        <p className='mt-3 text-base text-kingdom-muted'>
+                                                تشكيلة مختارة بعناية تضم روائح ملكية آسرة.
+                                        </p>
+                                </div>
+                                <div className='relative mt-12'>
+                                        <div className='overflow-hidden pb-6'>
                                                 <div
-                                                        className='flex transition-transform duration-300 ease-in-out'
+                                                        className='flex gap-5 transition-transform duration-220 ease-out'
                                                         style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
                                                 >
                                                         {products.map((product) => {
@@ -73,79 +80,84 @@ const FeaturedProducts = ({ featuredProducts }) => {
                                                                         isDiscounted,
                                                                         discountPercentage,
                                                                 };
+
                                                                 return (
-                                                                        <div key={product._id} className='w-full flex-shrink-0 px-2 sm:w-1/2 lg:w-1/3 xl:w-1/4'>
-                                                                                <div className='group flex h-full flex-col overflow-hidden rounded-xl border border-payzone-indigo/30 bg-white/5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-payzone-gold/60 hover:shadow-xl'>
-                                                                                        <div className='relative overflow-hidden'>
+                                                                        <div key={product._id} className='w-full flex-shrink-0 sm:w-1/2 lg:w-1/3 xl:w-1/4'>
+                                                                                <article className='group flex h-full flex-col overflow-hidden rounded-3xl border border-kingdom-purple/10 bg-white shadow-[0_25px_45px_-28px_rgba(26,13,36,0.5)] transition-royal hover:-translate-y-1.5 hover:shadow-royal-soft'>
+                                                                                        <div className='relative h-52 overflow-hidden'>
                                                                                                 {isDiscounted && (
-                                                                                                        <span className='absolute right-3 top-3 z-10 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white shadow-lg'>
+                                                                                                        <span className='absolute right-4 top-4 z-10 rounded-full bg-kingdom-purple/95 px-3 py-1 text-xs font-semibold text-kingdom-ivory shadow-[0_10px_25px_-18px_rgba(34,18,40,0.65)]'>
                                                                                                                 -{discountPercentage}%
                                                                                                         </span>
                                                                                                 )}
                                                                                                 <img
                                                                                                         src={product.image}
                                                                                                         alt={product.name}
-                                                                                                        className='h-48 w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110'
+                                                                                                        className='h-full w-full object-cover transition-royal group-hover:scale-105'
                                                                                                 />
+                                                                                                <div className='absolute inset-0 bg-gradient-to-b from-transparent via-kingdom-purple/15 to-kingdom-purple/60 opacity-0 transition-royal group-hover:opacity-100' />
                                                                                         </div>
-                                                                                        <div className='p-4'>
-                                                                                                <h3 className='mb-2 text-lg font-semibold text-white'>{product.name}</h3>
-                                                                                                <div className='mb-4 flex flex-wrap items-baseline gap-2'>
+                                                                                        <div className='flex flex-1 flex-col gap-4 px-6 py-6'>
+                                                                                                <h3 className='text-lg font-semibold tracking-[0.08em]' style={{ color: adaptiveText }}>
+                                                                                                        {product.name}
+                                                                                                </h3>
+                                                                                                <div className='flex flex-wrap items-baseline gap-3 text-sm font-medium'>
                                                                                                         {isDiscounted ? (
                                                                                                                 <>
-                                                                                                                        <span className='max-w-full break-words text-sm text-white/60 line-through'>
-                                                                                                                                {formatMRU(price)}
-                                                                                                                        </span>
-                                                                                                                        <span className='max-w-full break-words text-lg font-bold text-red-300'>
-                                                                                                                                {formatMRU(discountedPrice)}
-                                                                                                                        </span>
+                                                                                                                        <span className='text-kingdom-muted line-through'>{formatMRU(price)}</span>
+                                                                                                                        <span className='text-lg font-semibold text-kingdom-purple'>{formatMRU(discountedPrice)}</span>
                                                                                                                 </>
                                                                                                         ) : (
-                                                                                                                <span className='max-w-full break-words text-lg font-medium text-payzone-gold'>
+                                                                                                                <span className='text-lg font-semibold text-kingdom-purple'>
                                                                                                                         {formatMRU(price)}
                                                                                                                 </span>
                                                                                                         )}
                                                                                                 </div>
-                                                                                                <button
-                                                                                                        onClick={() => addToCart(enrichedProduct)}
-                                                                                                        className='flex w-full items-center justify-center gap-2 rounded bg-payzone-gold py-2 px-4 font-semibold text-payzone-navy transition-colors duration-300 hover:bg-[#b8873d]'
-                                                                                                >
-                                                                                                        <ShoppingCart className='h-5 w-5' />
-                                                                                                        {t("common.actions.addToCart")}
-                                                                                                </button>
+                                                                                                <div className='mt-auto flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-kingdom-purple to-kingdom-plum px-4 py-3 text-kingdom-ivory shadow-[0_18px_28px_-20px_rgba(26,13,36,0.7)]'>
+                                                                                                        <div className='text-sm'>
+                                                                                                                <span className='block text-xs text-kingdom-ivory/70'>سعر اليوم</span>
+                                                                                                                <span className='text-base font-semibold'>{formatMRU(discountedPrice || price)}</span>
+                                                                                                        </div>
+                                                                                                        <button
+                                                                                                                onClick={() => addToCart(enrichedProduct)}
+                                                                                                                className='inline-flex items-center justify-center gap-2 rounded-full bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow'
+                                                                                                        >
+                                                                                                                <ShoppingCart className='h-4 w-4' />
+                                                                                                                {t("common.actions.addToCart")}
+                                                                                                        </button>
+                                                                                                </div>
                                                                                         </div>
-                                                                                </div>
+                                                                                </article>
                                                                         </div>
                                                                 );
                                                         })}
                                                 </div>
                                         </div>
-                                        <button
-                                                onClick={prevSlide}
-                                                disabled={isStartDisabled}
-                                                className={`absolute top-1/2 -right-4 flex -translate-y-1/2 transform items-center justify-center rounded-full p-2 transition-colors duration-300 ${
-                                                        isStartDisabled
-                                                                ? "cursor-not-allowed bg-white/10 text-white/40"
-                                                                : "bg-payzone-indigo text-white hover:bg-[#3b3ad6]"
-                                                }`}
-                                        >
-                                                <ChevronRight className='h-6 w-6' />
-                                        </button>
-
-                                        <button
-                                                onClick={nextSlide}
-                                                disabled={isEndDisabled}
-                                                className={`absolute top-1/2 -left-4 flex -translate-y-1/2 transform items-center justify-center rounded-full p-2 transition-colors duration-300 ${
-                                                        isEndDisabled
-                                                                ? "cursor-not-allowed bg-white/10 text-white/40"
-                                                                : "bg-payzone-indigo text-white hover:bg-[#3b3ad6]"
-                                                }`}
-                                        >
-                                                <ChevronLeft className='h-6 w-6' />
-                                        </button>
+                                        <div className='absolute inset-y-1/2 hidden -translate-y-1/2 items-center justify-between px-2 sm:flex'>
+                                                <button
+                                                        onClick={nextSlide}
+                                                        disabled={isEndDisabled}
+                                                        className={`inline-flex h-12 w-12 items-center justify-center rounded-full border border-kingdom-gold/30 bg-white/80 text-kingdom-purple shadow-[0_15px_30px_-25px_rgba(34,18,40,0.75)] transition-royal focus-outline hover:border-kingdom-gold hover:text-kingdom-plum ${
+                                                                isEndDisabled ? "cursor-not-allowed opacity-40" : ""
+                                                        }`}
+                                                        aria-label={t("home.featuredNext")}
+                                                >
+                                                        <ChevronRight className='h-5 w-5' />
+                                                </button>
+                                                <button
+                                                        onClick={prevSlide}
+                                                        disabled={isStartDisabled}
+                                                        className={`inline-flex h-12 w-12 items-center justify-center rounded-full border border-kingdom-gold/30 bg-white/80 text-kingdom-purple shadow-[0_15px_30px_-25px_rgba(34,18,40,0.75)] transition-royal focus-outline hover:border-kingdom-gold hover:text-kingdom-plum ${
+                                                                isStartDisabled ? "cursor-not-allowed opacity-40" : ""
+                                                        }`}
+                                                        aria-label={t("home.featuredPrev")}
+                                                >
+                                                        <ChevronLeft className='h-5 w-5' />
+                                                </button>
+                                        </div>
                                 </div>
                         </div>
-                </div>
+                </section>
         );
 };
 export default FeaturedProducts;
