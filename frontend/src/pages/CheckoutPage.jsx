@@ -153,7 +153,7 @@ const CheckoutPage = () => {
                 messageLines.push("", t("checkout.messages.total", { amount: formatMRU(total) }));
                 messageLines.push("", t("checkout.messages.thanks"));
 
-                const DEFAULT_STORE_WHATSAPP_NUMBER = "22231117700";
+                const DEFAULT_STORE_WHATSAPP_NUMBER = "22233063926";
                 const envStoreNumber = import.meta.env.VITE_STORE_WHATSAPP_NUMBER;
                 const storeNumber = envStoreNumber?.replace(/\D/g, "") || DEFAULT_STORE_WHATSAPP_NUMBER;
 
@@ -175,18 +175,18 @@ const CheckoutPage = () => {
         };
 
         return (
-                <div className='py-10'>
+                <div className='bg-kingdom-ivory py-16'>
                         <div className='mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 lg:flex-row'>
                                 <motion.section
-                                        className='w-full rounded-xl border border-payzone-indigo/40 bg-white/5 p-6 shadow-lg backdrop-blur-sm'
+                                        className='w-full rounded-[2rem] border border-kingdom-purple/15 bg-white/90 p-8 shadow-[0_28px_60px_-40px_rgba(34,18,40,0.45)] backdrop-blur-sm'
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.4 }}
                                 >
-                                        <h1 className='mb-6 text-2xl font-bold text-payzone-gold'>{t("checkout.title")}</h1>
-                                        <form className='space-y-5' onSubmit={handleSubmit}>
+                                        <h1 className='mb-6 text-2xl font-semibold tracking-[0.18em] text-kingdom-purple'>{t("checkout.title")}</h1>
+                                        <form className='space-y-5 text-kingdom-charcoal' onSubmit={handleSubmit}>
                                                 <div className='space-y-2'>
-                                                        <label className='block text-sm font-medium text-white/80' htmlFor='customerName'>
+                                                        <label className='block text-sm font-medium text-kingdom-muted' htmlFor='customerName'>
                                                                 {t("checkout.form.fullName")}
                                                         </label>
                                                         <input
@@ -194,14 +194,14 @@ const CheckoutPage = () => {
                                                                 type='text'
                                                                 value={customerName}
                                                                 onChange={(event) => setCustomerName(event.target.value)}
-                                                                className='w-full rounded-lg border border-payzone-indigo/40 bg-payzone-navy/60 px-4 py-2 text-white placeholder-white/40 focus:border-payzone-gold focus:outline-none focus:ring-2 focus:ring-payzone-indigo'
+                                                                className='w-full rounded-2xl border border-kingdom-purple/20 bg-white/90 px-5 py-3 text-base text-kingdom-charcoal placeholder:text-kingdom-muted focus:border-kingdom-gold focus:outline-none focus:ring-2 focus:ring-kingdom-gold/40'
                                                                 placeholder={t("checkout.form.fullNamePlaceholder")}
                                                                 required
                                                         />
                                                 </div>
 
                                                 <div className='space-y-2'>
-                                                        <label className='block text-sm font-medium text-white/80' htmlFor='whatsAppNumber'>
+                                                        <label className='block text-sm font-medium text-kingdom-muted' htmlFor='whatsAppNumber'>
                                                                 {t("checkout.form.whatsApp")}
                                                         </label>
                                                         <input
@@ -209,15 +209,15 @@ const CheckoutPage = () => {
                                                                 type='tel'
                                                                 value={whatsAppNumber}
                                                                 onChange={handleWhatsAppChange}
-                                                                className='w-full rounded-lg border border-payzone-indigo/40 bg-payzone-navy/60 px-4 py-2 text-white placeholder-white/40 focus:border-payzone-gold focus:outline-none focus:ring-2 focus:ring-payzone-indigo'
+                                                                className='w-full rounded-2xl border border-kingdom-purple/20 bg-white/90 px-5 py-3 text-base text-kingdom-charcoal placeholder:text-kingdom-muted focus:border-kingdom-gold focus:outline-none focus:ring-2 focus:ring-kingdom-gold/40'
                                                                 placeholder={t("checkout.form.whatsAppPlaceholder")}
                                                                 required
                                                         />
-                                                        {whatsAppError && <p className='text-sm text-red-400'>{whatsAppError}</p>}
+                                                        {whatsAppError && <p className='text-sm text-rose-500'>{whatsAppError}</p>}
                                                 </div>
 
                                                 <div className='space-y-2'>
-                                                        <label className='block text-sm font-medium text-white/80' htmlFor='address'>
+                                                        <label className='block text-sm font-medium text-kingdom-muted' htmlFor='address'>
                                                                 {t("checkout.form.address")}
                                                         </label>
                                                         <textarea
@@ -225,7 +225,7 @@ const CheckoutPage = () => {
                                                                 value={address}
                                                                 onChange={(event) => setAddress(event.target.value)}
                                                                 rows={4}
-                                                                className='w-full rounded-lg border border-payzone-indigo/40 bg-payzone-navy/60 px-4 py-2 text-white placeholder-white/40 focus:border-payzone-gold focus:outline-none focus:ring-2 focus:ring-payzone-indigo'
+                                                                className='w-full rounded-2xl border border-kingdom-purple/20 bg-white/90 px-5 py-3 text-base text-kingdom-charcoal placeholder:text-kingdom-muted focus:border-kingdom-gold focus:outline-none focus:ring-2 focus:ring-kingdom-gold/40'
                                                                 placeholder={t("checkout.form.addressPlaceholder")}
                                                                 required
                                                         />
@@ -234,7 +234,7 @@ const CheckoutPage = () => {
                                                 <motion.button
                                                         type='submit'
                                                         disabled={!isFormValid}
-                                                        className='w-full rounded-lg bg-payzone-gold px-5 py-3 text-base font-semibold text-payzone-navy transition duration-300 hover:bg-[#b8873d] focus:outline-none focus:ring-4 focus:ring-payzone-indigo/40 disabled:opacity-50'
+                                                        className='w-full rounded-full bg-kingdom-gold px-6 py-3 text-base font-semibold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow disabled:opacity-60'
                                                         whileHover={{ scale: 1.02 }}
                                                         whileTap={{ scale: 0.97 }}
                                                 >
@@ -244,25 +244,25 @@ const CheckoutPage = () => {
                                 </motion.section>
 
                                 <motion.aside
-                                        className='w-full rounded-xl border border-payzone-indigo/40 bg-white/5 p-6 shadow-lg backdrop-blur-sm lg:max-w-sm'
+                                        className='w-full rounded-[2rem] border border-kingdom-purple/15 bg-gradient-to-br from-white via-kingdom-cream/80 to-white p-8 text-kingdom-charcoal shadow-[0_28px_60px_-38px_rgba(34,18,40,0.45)] lg:max-w-sm'
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.4, delay: 0.1 }}
                                 >
-                                        <h2 className='text-xl font-semibold text-payzone-gold'>{t("checkout.summary.title")}</h2>
-                                        <ul className='mt-4 space-y-3 text-sm text-white/70'>
+                                        <h2 className='text-xl font-semibold tracking-[0.16em] text-kingdom-purple'>{t("checkout.summary.title")}</h2>
+                                        <ul className='mt-4 space-y-3 text-sm text-kingdom-muted'>
                                                 {cart.map((item) => {
                                                         const { price, discountedPrice, isDiscounted } = getProductPricing(item);
                                                         return (
-                                                                <li key={item._id} className='flex justify-between gap-4'>
-                                                                        <span className='font-medium text-white'>{item.name}</span>
+                                                                <li key={item._id} className='flex justify-between gap-4 rounded-2xl border border-kingdom-purple/10 bg-white/70 px-4 py-3 shadow-[0_12px_26px_-24px_rgba(34,18,40,0.55)]'>
+                                                                        <span className='font-medium text-kingdom-purple'>{item.name}</span>
                                                                         <span className='flex flex-col items-end'>
                                                                                 {isDiscounted && (
-                                                                                        <span className='text-xs text-white/50 line-through'>
+                                                                                        <span className='text-xs text-kingdom-muted line-through'>
                                                                                                 {formatNumberEn(item.quantity)} × {formatMRU(price)}
                                                                                         </span>
                                                                                 )}
-                                                                                <span>
+                                                                                <span className='text-kingdom-purple'>
                                                                                         {formatNumberEn(item.quantity)} × {formatMRU(discountedPrice)}
                                                                                 </span>
                                                                         </span>
@@ -271,24 +271,24 @@ const CheckoutPage = () => {
                                                 })}
                                         </ul>
 
-                                        <div className='mt-6 space-y-2 border-t border-white/10 pt-4 text-sm text-white/70'>
+                                        <div className='mt-6 space-y-2 border-t border-kingdom-purple/15 pt-4 text-sm text-kingdom-muted'>
                                                 <div className='flex justify-between'>
                                                         <span>{t("checkout.summary.subtotal")}</span>
                                                         <span>{formatMRU(subtotal)}</span>
                                                 </div>
                                                 {savings > 0 && (
-                                                        <div className='flex justify-between text-payzone-gold'>
+                                                        <div className='flex justify-between text-kingdom-gold'>
                                                                 <span>{t("checkout.summary.savings")}</span>
                                                                 <span>-{formatMRU(savings)}</span>
                                                         </div>
                                                 )}
-                                                <div className='flex justify-between text-base font-semibold text-white'>
+                                                <div className='flex justify-between text-base font-semibold text-kingdom-purple'>
                                                         <span>{t("checkout.summary.total")}</span>
                                                         <span>{formatMRU(total)}</span>
                                                 </div>
                                         </div>
 
-                                        <p className='mt-4 text-xs text-white/60'>{t("checkout.summary.notice")}</p>
+                                        <p className='mt-4 text-xs text-kingdom-muted'>{t("checkout.summary.notice")}</p>
                                 </motion.aside>
                         </div>
                 </div>

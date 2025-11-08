@@ -60,16 +60,19 @@ const PeopleAlsoBought = ({ productId, category }) => {
         if (isLoading) return <LoadingSpinner />;
 
         return (
-                <div className='mt-8'>
-                        <h3 className='text-2xl font-semibold text-payzone-gold'>
+                <section className='rounded-[2rem] border border-kingdom-purple/10 bg-white/90 p-8 shadow-[0_25px_55px_-38px_rgba(34,18,40,0.5)] backdrop-blur-sm'>
+                        <h3 className='text-2xl font-semibold tracking-[0.16em] text-kingdom-purple'>
                                 {t("cart.recommendations.title")}
                         </h3>
-                        <div className='mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                        <p className='mt-2 text-sm text-kingdom-muted'>
+                                عطورا تكمل تجربتك الفاخرة بتوقيع مملكة العطور.
+                        </p>
+                        <div className='mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
                                 {recommendations.map((product) => (
                                         <ProductCard key={product._id} product={product} />
                                 ))}
                         </div>
-		</div>
-	);
+                </section>
+        );
 };
 export default PeopleAlsoBought;

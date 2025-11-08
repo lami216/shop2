@@ -60,6 +60,9 @@ const ProductDetailPage = () => {
                                         setActiveImage(resolveCoverImage(product));
                                 }
                         })
+                        .catch(() => {
+                                /* handled by store */
+                        });
 
                 return () => {
                         isMounted = false;
@@ -85,10 +88,14 @@ const ProductDetailPage = () => {
 
         if (!selectedProduct) {
                 return (
-                        <div className='relative min-h-screen text-payzone-white'>
-                                <div className='relative z-10 mx-auto max-w-4xl px-4 py-24 text-center'>
-                                        <h1 className='text-3xl font-semibold text-payzone-gold'>{t("products.detail.notFound.title")}</h1>
-                                        <p className='mt-4 text-white/70'>{t("products.detail.notFound.description")}</p>
+                        <div className='relative min-h-screen bg-kingdom-ivory text-kingdom-charcoal'>
+                                <div className='mx-auto flex max-w-3xl flex-col items-center px-4 py-32 text-center'>
+                                        <h1 className='text-3xl font-semibold tracking-[0.16em] text-kingdom-purple'>
+                                                {t("products.detail.notFound.title")}
+                                        </h1>
+                                        <p className='mt-4 text-base leading-relaxed text-kingdom-muted'>
+                                                {t("products.detail.notFound.description")}
+                                        </p>
                                 </div>
                         </div>
                 );
@@ -119,24 +126,15 @@ const ProductDetailPage = () => {
         };
 
         return (
-                <div className='relative min-h-screen overflow-hidden text-payzone-white'>
-                        <div className='relative z-10 mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8'>
-                                <div className='grid gap-10 lg:grid-cols-2'>
-                                        <div>
-                                                <div className='relative flex h-96 items-center justify-center overflow-hidden rounded-2xl border border-payzone-indigo/40 bg-payzone-navy/60'>
-                                                        {isDiscounted && (
-                                                                <span className='absolute right-4 top-4 rounded-full bg-red-600 px-4 py-1 text-sm font-semibold text-white shadow-lg'>
-                                                                        -{discountPercentage}%
-                                                                </span>
-                                                        )}
+                <div className='relative min-h-screen overflow-hidden bg-kingdom-ivory text-kingdom-charcoal'>
+                        <div className='mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 lg:px-8'>
+                                <div className='grid gap-14 lg:grid-cols-2 lg:items-start'>
+                                        <div className='space-y-6'>
+                                                <div className='relative flex h-[28rem] items-center justify-center overflow-hidden rounded-[2rem] border border-kingdom-purple/15 bg-white shadow-[0_28px_50px_-32px_rgba(26,13,36,0.6)]'>
                                                         {activeImage ? (
-                                                                <img
-                                                                        src={activeImage}
-                                                                        alt={selectedProduct.name}
-                                                                        className='h-full w-full object-contain'
-                                                                />
+                                                                <img src={activeImage} alt={selectedProduct.name} className='h-full w-full object-contain' />
                                                         ) : (
-                                                                <div className='text-white/60'>{t("common.status.noImage")}</div>
+                                                                <div className='text-kingdom-muted'>{t("common.status.noImage")}</div>
                                                         )}
                                                 </div>
                                                 {galleryImages.length > 1 && (
@@ -149,10 +147,8 @@ const ProductDetailPage = () => {
                                                                                         key={`${imageUrl}-${index}`}
                                                                                         type='button'
                                                                                         onClick={() => setActiveImage(imageUrl)}
-                                                                                        className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border transition-colors duration-200 ${
-                                                                                                isActive
-                                                                                                        ? "border-payzone-gold"
-                                                                                                        : "border-transparent"
+                                                                                        className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border transition-royal focus-outline ${
+                                                                                                isActive ? "border-kingdom-gold" : "border-transparent"
                                                                                         }`}
                                                                                         aria-label={t("products.detail.viewImage", { index: localizedIndex })}
                                                                                 >
@@ -164,31 +160,31 @@ const ProductDetailPage = () => {
                                                 )}
                                         </div>
 
-                                        <div className='flex flex-col gap-8 py-2 lg:pl-4'>
+                                        <div className='flex flex-col gap-8 rounded-[2rem] border border-kingdom-purple/10 bg-white/80 p-8 shadow-[0_24px_60px_-40px_rgba(34,18,40,0.45)] backdrop-blur-sm lg:sticky lg:top-28'>
                                                 <div className='space-y-6'>
                                                         {selectedProduct.category && (
-                                                                <p className='text-sm font-medium uppercase tracking-wide text-payzone-gold/80'>
+                                                                <p className='text-sm font-medium uppercase tracking-[0.3em] text-kingdom-purple/70'>
                                                                         {selectedProduct.category}
                                                                 </p>
                                                         )}
                                                         <div className='space-y-2'>
-                                                                <p className='text-sm font-semibold text-white/70'>الإسم</p>
-                                                                <h1 className='text-3xl font-bold text-payzone-gold'>
+                                                                <p className='text-sm font-medium text-kingdom-muted'>الإسم</p>
+                                                                <h1 className='text-3xl font-semibold tracking-[0.1em] text-kingdom-purple'>
                                                                         {selectedProduct.name}
                                                                 </h1>
                                                         </div>
-                                                        <div className='space-y-2'>
-                                                                <p className='text-sm font-semibold text-white/70'>السعر</p>
-                                                                <div className='flex flex-wrap items-center gap-4 text-3xl font-semibold text-payzone-gold'>
+                                                        <div className='space-y-3'>
+                                                                <p className='text-sm font-medium text-kingdom-muted'>السعر</p>
+                                                                <div className='flex flex-wrap items-center gap-4 text-3xl font-semibold text-kingdom-purple'>
                                                                         {isDiscounted ? (
                                                                                 <>
-                                                                                        <span className='text-2xl font-normal text-white/60 line-through'>
+                                                                                        <span className='text-2xl font-normal text-kingdom-muted line-through'>
                                                                                                 {formatMRU(price)}
                                                                                         </span>
-                                                                                        <span className='text-4xl font-bold text-red-300'>
+                                                                                        <span className='text-4xl font-bold text-kingdom-purple'>
                                                                                                 {formatMRU(discountedPrice)}
                                                                                         </span>
-                                                                                        <span className='rounded-full bg-red-600/80 px-3 py-1 text-base font-semibold text-white shadow'>
+                                                                                        <span className='rounded-full bg-kingdom-purple/90 px-4 py-1 text-base font-semibold text-kingdom-ivory shadow-[0_12px_24px_-18px_rgba(26,13,36,0.7)]'>
                                                                                                 -{discountPercentage}%
                                                                                         </span>
                                                                                 </>
@@ -199,26 +195,26 @@ const ProductDetailPage = () => {
                                                         </div>
                                                 </div>
 
-                                                <div className='flex flex-wrap items-center gap-3 text-white/80'>
-                                                        <span className='text-sm font-medium text-white/70'>
+                                                <div className='flex flex-wrap items-center gap-3 text-sm text-kingdom-muted'>
+                                                        <span className='font-medium text-kingdom-purple'>
                                                                 {t("cart.item.chooseQuantity")}
                                                         </span>
                                                         <div className='flex items-center gap-3'>
                                                                 <button
                                                                         type='button'
                                                                         onClick={handleDecreaseQuantity}
-                                                                        className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:border-payzone-gold/80 hover:bg-payzone-navy/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-payzone-gold'
+                                                                        className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-kingdom-purple/20 bg-white text-kingdom-purple transition-royal focus-outline hover:border-kingdom-gold hover:text-kingdom-plum'
                                                                         aria-label={t("cart.item.decrease")}
                                                                 >
                                                                         <Minus className='h-4 w-4' />
                                                                 </button>
-                                                                <span className='flex h-9 min-w-[3rem] items-center justify-center rounded-xl bg-white/10 text-base font-semibold text-white'>
+                                                                <span className='flex h-10 min-w-[3rem] items-center justify-center rounded-xl border border-kingdom-purple/15 bg-white/80 text-base font-semibold text-kingdom-purple'>
                                                                         {quantity}
                                                                 </span>
                                                                 <button
                                                                         type='button'
                                                                         onClick={handleIncreaseQuantity}
-                                                                        className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:border-payzone-gold/80 hover:bg-payzone-navy/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-payzone-gold'
+                                                                        className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-kingdom-purple/20 bg-white text-kingdom-purple transition-royal focus-outline hover:border-kingdom-gold hover:text-kingdom-plum'
                                                                         aria-label={t("cart.item.increase")}
                                                                 >
                                                                         <Plus className='h-4 w-4' />
@@ -226,30 +222,27 @@ const ProductDetailPage = () => {
                                                         </div>
                                                 </div>
 
-                                                <div className='space-y-3 text-white/80'>
-                                                        <h2 className='text-lg font-semibold text-payzone-gold'>
+                                                <div className='space-y-3 text-base text-kingdom-muted'>
+                                                        <h2 className='text-lg font-semibold text-kingdom-purple'>
                                                                 {t("products.detail.descriptionTitle")}
                                                         </h2>
-                                                        <p className='text-base leading-relaxed'>
+                                                        <p className='leading-relaxed'>
                                                                 {selectedProduct.description || t("products.detail.descriptionFallback")}
                                                         </p>
                                                 </div>
 
                                                 <button
                                                         onClick={handleAddToCart}
-                                                        className='inline-flex items-center justify-center rounded-full bg-payzone-gold px-6 py-3 text-lg font-semibold text-payzone-navy transition-colors duration-300 hover:bg-[#b8873d] focus:outline-none focus:ring-4 focus:ring-payzone-indigo/40'
+                                                        className='inline-flex items-center justify-center gap-2 rounded-full bg-kingdom-gold px-7 py-3 text-lg font-semibold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow'
                                                 >
                                                         {t("common.actions.addToCart")}
                                                 </button>
                                         </div>
                                 </div>
+                        </div>
 
-                                <div className='mt-16'>
-                                        <PeopleAlsoBought
-                                                productId={selectedProduct._id}
-                                                category={selectedProduct.category}
-                                        />
-                                </div>
+                        <div className='mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8'>
+                                <PeopleAlsoBought productId={selectedProduct._id} category={selectedProduct.category} />
                         </div>
                 </div>
         );
