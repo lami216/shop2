@@ -1,4 +1,4 @@
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, Search } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import useTranslation from "../hooks/useTranslation";
 import { useUserStore } from "../stores/useUserStore";
@@ -44,15 +44,14 @@ const Navbar = () => {
                                         mixBlendMode: "soft-light",
                                 }}
                         />
-                        <div className='container relative mx-auto max-w-6xl px-4 py-4'>
-                                <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-                                        <div className='flex flex-1 flex-col gap-3 lg:flex-row lg:items-center lg:gap-6'>
-                                                <Link
-                                                        to='/'
-                                                        className='flex flex-row-reverse items-center gap-3 text-kingdom-gold transition-royal focus-outline hover:text-kingdom-ivory'
-                                                >
-                                                        <span className='text-2xl font-semibold tracking-[0.22em]'>مملكة العطور</span>
-                                                        <span className='inline-flex h-12 w-12 items-center justify-center rounded-full border border-current/40 bg-kingdom-purple/40 backdrop-blur-sm'>
+                        <div className='container relative mx-auto max-w-6xl px-4 py-3'>
+                                <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+                                        <Link
+                                                to='/'
+                                                className='flex flex-row-reverse items-center gap-3 text-kingdom-gold transition-royal focus-outline hover:text-kingdom-ivory'
+                                        >
+                                                <span className='text-2xl font-semibold tracking-[0.22em]'>مملكة العطور</span>
+                                                <span className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-current/40 bg-kingdom-purple/40 backdrop-blur-sm'>
                                                                 <svg
                                                                         xmlns='http://www.w3.org/2000/svg'
                                                                         viewBox='0 0 64 64'
@@ -69,33 +68,10 @@ const Navbar = () => {
                                                                         <path d='M24 24l-2-5 10-5 10 5-2 5' />
                                                                         <path d='M28 46h8l-2 6h-4z' opacity='0.7' />
                                                                 </svg>
-                                                        </span>
-                                                </Link>
+                                                </span>
+                                        </Link>
 
-                                                <div className='w-full max-w-xl lg:max-w-lg'>
-                                                        <label htmlFor='site-search' className='sr-only'>
-                                                                {t("nav.search")}
-                                                        </label>
-                                                        <div className='flex items-center rounded-full border border-kingdom-gold/50 bg-white/95 pl-4 shadow-[0_12px_30px_-18px_rgba(34,18,40,0.45)] transition-royal focus-within:border-kingdom-gold focus-within:shadow-royal-glow'>
-                                                                <Search className='h-5 w-5 text-kingdom-muted' aria-hidden='true' />
-                                                                <input
-                                                                        id='site-search'
-                                                                        type='search'
-                                                                        placeholder='ابحث عن عطرك المفضل'
-                                                                        className='w-full border-none bg-transparent px-3 py-2 text-base text-kingdom-charcoal placeholder:text-kingdom-muted focus:outline-none'
-                                                                />
-                                                                <button
-                                                                        type='button'
-                                                                        className='mr-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-kingdom-gold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow'
-                                                                        aria-label={t("nav.search")}
-                                                                >
-                                                                        <Search className='h-4 w-4' />
-                                                                </button>
-                                                        </div>
-                                                </div>
-                                        </div>
-
-                                        <div className='flex flex-wrap items-center justify-end gap-3 text-sm font-medium'>
+                                        <div className='flex flex-col items-center gap-3 text-sm font-medium sm:flex-row sm:justify-end sm:gap-4'>
                                                 <nav className='flex items-center gap-4 text-kingdom-ivory/80'>
                                                         <Link
                                                                 to={'/'}

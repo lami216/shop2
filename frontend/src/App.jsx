@@ -8,6 +8,7 @@ import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 
 import Navbar from "./components/Navbar";
+import SiteSearchBar from "./components/SiteSearchBar";
 import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
@@ -44,8 +45,9 @@ function App() {
 
         return (
                 <div className='relative min-h-screen bg-kingdom-ivory text-kingdom-charcoal'>
-                        <div className='relative z-50 pt-24 lg:pt-28'>
-                                <Navbar />
+                        <Navbar />
+                        <div className='relative z-40 pt-20 lg:pt-24'>
+                                <SiteSearchBar />
                                 <Routes>
                                         <Route path='/' element={<HomePage />} />
                                         <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />
