@@ -4,7 +4,7 @@ import PaymentMethods from "./PaymentMethods";
 const socialLinks = [
         {
                 label: "WhatsApp",
-                href: "#",
+                href: "https://wa.me/22233063926",
                 icon: (
                         <svg
                                 viewBox='0 0 24 24'
@@ -19,12 +19,12 @@ const socialLinks = [
         },
         {
                 label: "Facebook",
-                href: "#",
+                href: "https://www.facebook.com/share/16Sr6oWAZm/",
                 icon: <Facebook className='h-5 w-5' strokeWidth={1.6} aria-hidden='true' />,
         },
         {
                 label: "TikTok",
-                href: "#",
+                href: "https://www.tiktok.com/@perfume_kingdom_?_r=1&_t=ZM-91EhlGIkaNc",
                 icon: (
                         <svg
                                 viewBox='0 0 24 24'

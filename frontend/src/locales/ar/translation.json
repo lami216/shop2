@@ -56,30 +56,42 @@
                         "categoryDeleted": "تم حذف الفئة بنجاح",
                         "passwordMismatch": "كلمتا المرور غير متطابقتين.",
                         "productAddedToCart": "تمت إضافة المنتج إلى السلة",
-                        "couponAppliedSuccess": "تم تطبيق الكوبون بنجاح"
+                        "couponAppliedSuccess": "تم تطبيق الكوبون بنجاح",
+                        "orderStatusUpdated": "تم تحديث حالة الطلب بنجاح",
+                        "orderCancelled": "تم إلغاء الطلب",
+                        "couponCreated": "تم إنشاء القسيمة بنجاح",
+                        "couponUpdated": "تم تحديث القسيمة بنجاح",
+                        "couponToggled": "تم تحديث حالة القسيمة",
+                        "couponDeleted": "تم حذف القسيمة"
                 }
         },
         "nav": {
                 "home": "الرئيسية",
                 "cart": "السلة",
-        "dashboard": "لوحة التحكم",
-        "search": "بحث",
+                "dashboard": "لوحة التحكم",
+                "search": "بحث",
+                "searchPlaceholder": "ابحث عن عطرك المفضل",
                 "admin": "المشرف",
                 "login": "تسجيل الدخول",
                 "signup": "إنشاء حساب",
                 "logout": "تسجيل الخروج"
         },
         "home": {
-        "titleLine1": "مختارات مملكة العطور",
-        "titleHighlight": "",
-        "subtitle": "انتقينا لك تشكيلات عطرية فاخرة تجمع بين الأصالة والفخامة لترافقك في كل لحظة مميزة.",
-        "featuredTitle": "روائع مختارة",
-        "featuredNext": "التالي",
-        "featuredPrev": "السابق"
+                "titleLine1": "مختارات مملكة العطور",
+                "titleHighlight": "",
+                "subtitle": "انتقينا لك تشكيلات عطرية فاخرة تجمع بين الأصالة والفخامة لترافقك في كل لحظة مميزة.",
+                "searchPlaceholder": "ابحث عن اسم العطر أو مكوناته",
+                "searchTagline": "استكشف عالماً من الروائح الفاخرة",
+                "searchHint": "فلتر تلقائي حسب الفئة الحالية",
+                "featuredTitle": "روائع مختارة",
+                "featuredTag": "عرض حصري",
+                "featuredNext": "التالي",
+                "featuredPrev": "السابق"
         },
         "categories": {
                 "explore": "استكشف {{category}}",
                 "discover": "اكتشف {{category}}",
+                "cta": "اكتشف الآن",
                 "manager": {
                         "title": "إدارة الفئات",
                         "description": "أنشئ الفئات ونظّمها بسهولة لعرضها في الواجهة الرئيسية.",
@@ -112,11 +124,22 @@
         },
         "admin": {
                 "dashboardTitle": "لوحة تحكم المشرف",
+                "dashboardSubtitle": "إدارة المنتجات والفئات والتحليلات والطلبات من مكان واحد.",
                 "tabs": {
                         "create": "إنشاء منتج",
                         "products": "المنتجات",
                         "analytics": "الإحصائيات",
-                        "categories": "الفئات"
+                        "categories": "الفئات",
+                        "orders": "الطلبات",
+                        "coupons": "القسائم"
+                },
+                "tabDescriptions": {
+                        "create": "إضافة منتج جديد مع صور وأسعار", 
+                        "products": "تعديل المنتجات الحالية وإدارتها",
+                        "categories": "تنظيم فئات العطور وصورها",
+                        "analytics": "متابعة أداء المتجر اليومي",
+                        "orders": "مراجعة الطلبات وتحديث حالاتها",
+                        "coupons": "إدارة القسائم وإنشاء رموز جديدة"
                 },
                 "createProduct": {
                         "title": "إنشاء منتج جديد",
@@ -202,6 +225,129 @@
                         "descriptionFallback": "لا توجد تفاصيل إضافية لهذا المنتج حالياً."
                 }
         },
+        "orders": {
+                "title": "إدارة الطلبات",
+                "subtitle": "تابع حالة الطلبات ونسّق مع العملاء بكل سهولة.",
+                "loading": "جاري تحميل الطلبات...",
+                "empty": "لا توجد طلبات في هذه الفئة حتى الآن.",
+                "filters": {
+                        "all": "جميع الحالات",
+                        "searchPlaceholder": "ابحث باسم العميل أو رقم الهاتف"
+                },
+                "metrics": {
+                        "totalRevenue": "إجمالي الإيرادات",
+                        "totalOrders": "عدد الطلبات",
+                        "totalItems": "إجمالي المنتجات",
+                        "pending": "طلبات قيد المعالجة"
+                },
+                "table": {
+                        "customer": "العميل",
+                        "items": "عدد المنتجات",
+                        "total": "الإجمالي",
+                        "payment": "طريقة الدفع",
+                        "status": "الحالة",
+                        "actions": "إجراءات",
+                        "totalItems": "عدد القطع",
+                        "totalAmount": "المبلغ"
+                },
+                "customer": {
+                        "unknown": "عميل غير معروف",
+                        "phone": "هاتف: {{phone}}",
+                        "email": "بريد: {{email}}"
+                },
+                "actions": {
+                        "cancel": "إلغاء الطلب"
+                },
+                "status": {
+                        "pending": "قيد الانتظار",
+                        "processing": "جاري التحضير",
+                        "shipped": "تم الشحن",
+                        "completed": "مكتمل",
+                        "cancelled": "ملغي"
+                },
+                "payment": {
+                        "whatsapp": "واتساب",
+                        "cash": "دفع عند الاستلام",
+                        "card": "بطاقة مصرفية",
+                        "bank_transfer": "تحويل بنكي"
+                },
+                "cancel": {
+                        "title": "إلغاء طلب {{name}}",
+                        "subtitle": "يرجى توضيح سبب الإلغاء ليظهر في سجل الطلبات.",
+                        "reason": "سبب الإلغاء",
+                        "placeholder": "مثال: العميل طلب الإلغاء أو تعذر التواصل",
+                        "confirm": "تأكيد الإلغاء"
+                }
+        },
+        "coupons": {
+                "title": "إدارة القسائم",
+                "subtitle": "أنشئ أكواد الخصم وتابع حالة تفعيلها بسهولة.",
+                "actions": {
+                        "createSingle": "إنشاء قسيمة",
+                        "createBulk": "إنشاء مجموعة أكواد",
+                        "activate": "تفعيل",
+                        "deactivate": "إيقاف",
+                        "edit": "تعديل",
+                        "delete": "حذف"
+                },
+                "metrics": {
+                        "total": "إجمالي القسائم",
+                        "active": "القسائم المفعلة",
+                        "inactive": "القسائم المتوقفة"
+                },
+                "filters": {
+                        "all": "جميع القسائم",
+                        "active": "مفعلة",
+                        "inactive": "متوقفة",
+                        "searchPlaceholder": "ابحث عن رمز أو وصف القسيمة"
+                },
+                "sort": {
+                        "createdAt": "الأحدث إضافة",
+                        "discount": "أعلى نسبة خصم",
+                        "expiration": "الأقرب انتهاء",
+                        "usage": "الأكثر استخداماً"
+                },
+                "loading": "جاري تحميل القسائم...",
+                "empty": "لم يتم إنشاء أي قسائم بعد.",
+                "table": {
+                        "code": "الرمز",
+                        "discount": "الخصم",
+                        "expiration": "تاريخ الانتهاء",
+                        "usage": "الاستخدام",
+                        "status": "الحالة",
+                        "actions": "إجراءات",
+                        "noExpiration": "غير محدد"
+                },
+                "status": {
+                        "active": "مفعل",
+                        "inactive": "متوقف"
+                },
+                "modal": {
+                        "createTitle": "إنشاء قسيمة جديدة",
+                        "editTitle": "تعديل القسيمة {{code}}",
+                        "bulkTitle": "إنشاء مجموعة قسائم",
+                        "subtitle": "حدد تفاصيل القسيمة مثل نسبة الخصم وتواريخ الصلاحية.",
+                        "singleMode": "قسيمة واحدة",
+                        "bulkMode": "مجموعة أكواد",
+                        "create": "إنشاء",
+                        "update": "حفظ التعديلات"
+                },
+                "fields": {
+                        "code": "رمز القسيمة",
+                        "codeHint": "مثال: ROYAL15",
+                        "codeHintBulk": "يتم توليد الأكواد تلقائياً",
+                        "label": "اسم مختصر",
+                        "description": "وصف مختصر",
+                        "discount": "نسبة الخصم",
+                        "usageLimit": "عدد مرات الاستخدام",
+                        "minOrder": "الحد الأدنى للطلب",
+                        "startDate": "تاريخ البداية",
+                        "expirationDate": "تاريخ الانتهاء",
+                        "quantity": "عدد الأكواد",
+                        "prefix": "بادئة الرمز",
+                        "length": "طول الجزء العشوائي"
+                }
+        },
         "product": {
                 "notFound": {
                         "title": "المنتج غير موجود",
@@ -214,7 +360,10 @@
         },
         "categoryPage": {
                 "title": "{{category}}",
-                "noProducts": "لا توجد منتجات"
+                "noProducts": "لا توجد منتجات",
+                "searchPlaceholder": "ابحث داخل {{category}}",
+                "searchTag": "فرز ذكي حسب الفئة",
+                "resultsCount": "{{count}} عنصر"
         },
         "cart": {
                 "title": "السلة",
@@ -361,6 +510,14 @@
                 "cartFetchError": "تعذر تحميل عناصر السلة",
                 "addToCartError": "تعذر إضافة المنتج إلى السلة",
                 "removeItemError": "تعذر إزالة العنصر",
-                "updateQuantityError": "تعذر تحديث الكمية"
+                "updateQuantityError": "تعذر تحديث الكمية",
+                "fetchOrdersError": "تعذر تحميل الطلبات",
+                "updateOrderStatusError": "تعذر تحديث حالة الطلب",
+                "cancelOrderError": "تعذر إلغاء الطلب",
+                "couponFetchError": "تعذر تحميل القسائم",
+                "couponCreateError": "تعذر إنشاء القسيمة",
+                "couponUpdateError": "تعذر تحديث القسيمة",
+                "couponToggleError": "تعذر تغيير حالة القسيمة",
+                "couponDeleteError": "تعذر حذف القسيمة"
         }
 }

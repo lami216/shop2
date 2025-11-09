@@ -1,33 +1,44 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import useTranslation from "../hooks/useTranslation";
 
 const CategoryItem = ({ category }) => {
         const { t } = useTranslation();
+        const hasImage = Boolean(category.imageUrl);
+
         return (
-                <div className='group relative h-full w-full overflow-hidden rounded-3xl border border-kingdom-purple/10 bg-white shadow-[0_18px_36px_-24px_rgba(34,18,40,0.45)] transition-royal hover:-translate-y-1.5 hover:shadow-royal-soft'>
-                        <Link to={`/category/${category.slug}`} className='flex h-full flex-col focus-outline'>
-                                <div className='relative h-48 w-full overflow-hidden sm:h-52'>
-                                        <img
-                                                src={category.imageUrl}
-                                                alt={category.name}
-                                                className='h-full w-full object-cover transition-royal duration-220 group-hover:scale-105'
-                                                loading='lazy'
-                                        />
-                                        <div className='pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-kingdom-purple/25 to-kingdom-plum/70 opacity-70 transition-royal group-hover:opacity-90' />
-                                </div>
-                                <div className='flex flex-1 flex-col gap-3 p-6'>
-                                        <h3 className='text-xl font-semibold tracking-[0.12em] text-kingdom-charcoal'>
-                                                {category.name}
-                                        </h3>
-                                        <p className='text-sm leading-relaxed text-kingdom-muted'>
-                                                {t("categories.explore", { category: category.name })}
-                                        </p>
-                                        <span className='mt-auto inline-flex items-center gap-2 self-start rounded-full border border-kingdom-gold/40 bg-kingdom-gold/10 px-4 py-1 text-xs font-semibold text-kingdom-gold transition-royal group-hover:bg-kingdom-gold/20'>
-                                                اكتشف الآن
-                                        </span>
+                <motion.article
+                        whileHover={{ y: -12 }}
+                        className='group relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-[0_28px_65px_-45px_rgba(0,0,0,0.8)] backdrop-blur-lg'
+                >
+                        <Link to={`/category/${category.slug}`} className='block h-full w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-kingdom-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'>
+                                <div className='relative h-72 w-full overflow-hidden'>
+                                        {hasImage ? (
+                                                <img
+                                                        src={category.imageUrl}
+                                                        alt={category.name}
+                                                        loading='lazy'
+                                                        className='h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105'
+                                                />
+                                        ) : (
+                                                <div className='h-full w-full bg-gradient-to-br from-kingdom-plum via-kingdom-purple to-[#0E0712]' />
+                                        )}
+                                        <div className='pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-kingdom-plum/60 to-[#0A050D] opacity-90 transition duration-500 group-hover:opacity-100' />
+                                        <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.28),_transparent_55%)] opacity-0 transition duration-500 group-hover:opacity-100' />
+                                        <div className='absolute inset-x-0 bottom-0 p-8'>
+                                                <h3 className='text-2xl font-semibold tracking-[0.18em] text-kingdom-cream'>
+                                                        {category.name}
+                                                </h3>
+                                                <p className='mt-3 text-sm leading-relaxed text-kingdom-cream/70'>
+                                                        {t("categories.explore", { category: category.name })}
+                                                </p>
+                                                <span className='mt-5 inline-flex items-center gap-2 rounded-full border border-kingdom-gold/50 bg-kingdom-gold/15 px-5 py-2 text-xs font-semibold tracking-[0.24em] text-kingdom-gold transition duration-300 group-hover:bg-kingdom-gold/25'>
+                                                        {t("categories.cta")}
+                                                </span>
+                                        </div>
                                 </div>
                         </Link>
-                </div>
+                </motion.article>
         );
 };
 
