@@ -39,9 +39,10 @@ const Hero = () => {
                                                 <span className='inline-block h-2 w-2 rounded-full bg-kingdom-gold' aria-hidden='true' />
                                                 إصدار ملكي محدود
                                         </div>
-                                        <h1 className='mt-6 text-4xl font-semibold leading-[1.25] tracking-[0.12em] text-kingdom-ivory sm:text-5xl lg:text-6xl'>
+                                        <h1 className='mt-6 text-4xl font-semibold leading-[1.25] tracking-[0.16em] text-kingdom-ivory sm:text-5xl lg:text-6xl'>
                                                 مملكة العطور
                                         </h1>
+                                        <div className='mt-4 h-1 w-32 rounded-full bg-gradient-to-r from-kingdom-gold via-[#7F6FFF] to-transparent shadow-[0_12px_30px_-20px_rgba(212,175,55,0.65)]' />
                                         <p className='mt-6 text-lg leading-relaxed text-kingdom-cream/90 sm:text-xl'>
                                                 رحلة حسية تغمر حواسك بروائح شرقية آسرة، حيث تمتزج المكونات النادرة مع تصاميم راقية تمنحك تميزًا لا يُنسى وثباتًا يمتد لساعات طويلة.
                                         </p>

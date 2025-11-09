@@ -1,34 +1,74 @@
 import { Search } from "lucide-react";
+import { useEffect, useId, useMemo, useState } from "react";
 import useTranslation from "../hooks/useTranslation";
 
-const SiteSearchBar = () => {
-  const { t } = useTranslation();
+const SiteSearchBar = ({
+        value,
+        defaultValue = "",
+        placeholder,
+        onChange,
+        onSubmit,
+        actionLabel,
+        className,
+        children,
+}) => {
+        const { t } = useTranslation();
+        const generatedId = useId();
+        const inputId = useMemo(() => `site-search-${generatedId}`, [generatedId]);
+        const [internalValue, setInternalValue] = useState(defaultValue);
 
-  return (
-    <div className='bg-kingdom-ivory/95 px-4 py-4 shadow-royal-soft/40 backdrop-blur-sm'>
-      <div className='mx-auto flex max-w-4xl flex-col items-center gap-3 rounded-3xl border border-kingdom-gold/20 bg-white/80 p-4 shadow-royal-soft/60 sm:flex-row sm:gap-4'>
-        <label htmlFor='site-search' className='sr-only'>
-          {t("nav.search")}
-        </label>
-        <div className='flex w-full items-center rounded-full border border-kingdom-gold/40 bg-white/95 pl-4 shadow-[0_12px_30px_-18px_rgba(34,18,40,0.35)] transition-royal focus-within:border-kingdom-gold focus-within:shadow-royal-glow'>
-          <Search className='h-5 w-5 text-kingdom-muted' aria-hidden='true' />
-          <input
-            id='site-search'
-            type='search'
-            placeholder='ابحث عن عطرك المفضل'
-            className='w-full border-none bg-transparent px-3 py-2 text-base text-kingdom-charcoal placeholder:text-kingdom-muted focus:outline-none'
-          />
-          <button
-            type='button'
-            className='mr-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-kingdom-gold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow'
-            aria-label={t("nav.search")}
-          >
-            <Search className='h-4 w-4' />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+        useEffect(() => {
+                setInternalValue(defaultValue);
+        }, [defaultValue]);
+
+        const currentValue = value !== undefined ? value : internalValue;
+
+        const handleChange = (event) => {
+                if (value === undefined) {
+                        setInternalValue(event.target.value);
+                }
+
+                onChange?.(event.target.value);
+        };
+
+        const handleSubmit = (event) => {
+                event.preventDefault();
+                onSubmit?.(value !== undefined ? value : internalValue);
+        };
+
+        const containerClassName = ["px-4 py-6", className].filter(Boolean).join(" ");
+
+        return (
+                <div className={containerClassName}>
+                        <form
+                                onSubmit={handleSubmit}
+                                className='mx-auto flex max-w-3xl flex-col gap-4 rounded-[2.25rem] border border-kingdom-gold/25 bg-white/10 p-5 text-kingdom-cream shadow-[0_24px_45px_-30px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:flex-row sm:items-center sm:gap-5'
+                        >
+                                <label htmlFor={inputId} className='sr-only'>
+                                        {t("nav.search")}
+                                </label>
+                                <div className='flex w-full items-center rounded-full border border-kingdom-gold/40 bg-gradient-to-r from-white/20 via-white/10 to-transparent pl-4 pr-2 shadow-[0_12px_30px_-18px_rgba(212,175,55,0.25)] transition focus-within:border-kingdom-gold focus-within:shadow-royal-glow'>
+                                        <Search className='h-5 w-5 text-kingdom-cream/70' aria-hidden='true' />
+                                        <input
+                                                id={inputId}
+                                                type='search'
+                                                value={currentValue}
+                                                onChange={handleChange}
+                                                placeholder={placeholder || t("nav.searchPlaceholder")}
+                                                className='w-full border-none bg-transparent px-3 py-3 text-base text-kingdom-cream placeholder:text-kingdom-cream/40 focus:outline-none'
+                                        />
+                                        <button
+                                                type='submit'
+                                                className='inline-flex h-11 w-11 items-center justify-center rounded-full border border-kingdom-gold/60 bg-kingdom-gold/20 text-kingdom-gold transition hover:bg-kingdom-gold/30'
+                                                aria-label={actionLabel || t("nav.search")}
+                                        >
+                                                <Search className='h-4 w-4' />
+                                        </button>
+                                </div>
+                                {children && <div className='flex w-full flex-wrap items-center justify-between gap-3 text-sm text-kingdom-cream/70'>{children}</div>}
+                        </form>
+                </div>
+        );
 };
 
 export default SiteSearchBar;

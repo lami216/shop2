@@ -65,9 +65,24 @@ const resolveEndpoint = (endpoint) => {
 };
 
 const request = async (endpoint, options = {}) => {
-        const { skipAuthRetry = false, ...restOptions } = options;
+        const { skipAuthRetry = false, params, ...restOptions } = options;
         const config = buildFetchConfig(restOptions);
-        const response = await fetch(resolveEndpoint(endpoint), config);
+
+        let resolvedEndpoint = resolveEndpoint(endpoint);
+
+        if (params && typeof params === "object") {
+                const searchParams = new URLSearchParams();
+                Object.entries(params).forEach(([key, value]) => {
+                        if (value === undefined || value === null) return;
+                        searchParams.append(key, String(value));
+                });
+                const queryString = searchParams.toString();
+                if (queryString) {
+                        resolvedEndpoint = `${resolvedEndpoint}?${queryString}`;
+                }
+        }
+
+        const response = await fetch(resolvedEndpoint, config);
 
         if (response.status === 401 && !skipAuthRetry && typeof refreshHandler === "function") {
 

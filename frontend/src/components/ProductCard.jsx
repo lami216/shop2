@@ -1,10 +1,10 @@
 import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import useTranslation from "../hooks/useTranslation";
 import { useCartStore } from "../stores/useCartStore";
 import { formatMRU } from "../lib/formatMRU";
 import { getProductPricing } from "../lib/getProductPricing";
-import { getReadableTextColor } from "../lib/colorUtils";
 
 const ProductCard = ({ product }) => {
         const { addToCart } = useCartStore();
@@ -28,72 +28,71 @@ const ProductCard = ({ product }) => {
                 addToCart(productForCart);
         };
 
-        const cardBackground = "#FFFFFF";
-        const titleColor = getReadableTextColor(cardBackground);
-
         return (
-                <article className='group relative flex w-full flex-col overflow-hidden rounded-2xl border border-kingdom-purple/12 bg-white shadow-[0_22px_40px_-30px_rgba(26,13,36,0.65)] transition-royal hover:-translate-y-1.5 hover:shadow-royal-soft'>
+                <motion.article
+                        whileHover={{ y: -12 }}
+                        className='group relative flex w-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-[0_28px_65px_-45px_rgba(0,0,0,0.8)] backdrop-blur-lg'
+                >
                         <Link
                                 to={`/products/${product._id}`}
-                                className='relative block w-full overflow-hidden aspect-[4/5] focus-outline'
+                                className='relative block w-full overflow-hidden aspect-[4/5] focus:outline-none focus-visible:ring-2 focus-visible:ring-kingdom-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
                                 aria-label={t("product.viewDetails", { name: product.name })}
                         >
                                 {isDiscounted && (
-                                        <span className='absolute right-4 top-4 z-10 rounded-full bg-kingdom-purple/95 px-3 py-1 text-xs font-semibold text-kingdom-ivory shadow-[0_12px_25px_-20px_rgba(34,18,40,0.65)]'>
+                                        <span className='absolute right-5 top-5 z-10 inline-flex items-center gap-1 rounded-full bg-red-500/90 px-3 py-1 text-xs font-semibold text-white shadow-[0_18px_35px_-28px_rgba(255,82,82,0.65)]'>
                                                 -{discountPercentage}%
                                         </span>
                                 )}
                                 {coverImage ? (
                                         <img
-                                                className='h-full w-full object-cover transition-royal group-hover:scale-105'
+                                                className='h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105'
                                                 src={coverImage}
                                                 alt={product.name}
                                         />
                                 ) : (
-                                        <div className='flex h-full w-full items-center justify-center bg-kingdom-purple/40 text-sm text-kingdom-ivory/80'>
+                                        <div className='flex h-full w-full items-center justify-center bg-gradient-to-br from-kingdom-plum via-kingdom-purple to-[#0E0712] text-sm text-kingdom-cream/70'>
                                                 {t("common.status.noImage")}
                                         </div>
                                 )}
-                                <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-kingdom-plum/75 via-kingdom-purple/25 to-transparent opacity-60 transition-royal group-hover:opacity-80' />
+                                <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050208] via-kingdom-plum/60 to-transparent opacity-90 transition duration-500 group-hover:opacity-100' />
                         </Link>
 
-                        <div className='flex flex-1 flex-col gap-4 px-6 pb-6 pt-5'>
+                        <div className='flex flex-1 flex-col gap-4 px-6 pb-6 pt-5 text-kingdom-cream'>
                                 <Link
                                         to={`/products/${product._id}`}
-                                        className='block transition-royal hover:text-kingdom-purple'
+                                        className='block transition hover:text-kingdom-gold'
                                 >
-                                        <h5 className='text-lg font-semibold tracking-[0.08em]' style={{ color: titleColor }}>
+                                        <h5 className='text-lg font-semibold tracking-[0.12em]'>
                                                 {product.name}
                                         </h5>
                                 </Link>
-                                <p className='text-sm leading-relaxed text-kingdom-muted'>
+                                <p className='line-clamp-3 text-sm leading-relaxed text-kingdom-cream/70'>
                                         {product.description}
                                 </p>
-                                <div className='mt-auto flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-kingdom-purple to-kingdom-plum px-4 py-3 text-kingdom-ivory shadow-[0_18px_30px_-22px_rgba(26,13,36,0.7)]'>
-                                        <div className='text-sm'>
-                                                {isDiscounted ? (
-                                                        <div className='flex flex-col items-start gap-1'>
-                                                                <span className='text-xs text-kingdom-ivory/70 line-through'>
+                                <div className='mt-auto rounded-[1.75rem] border border-white/10 bg-white/5 p-4 shadow-[0_20px_45px_-38px_rgba(0,0,0,0.8)]'>
+                                        <div className='flex items-end justify-between gap-3'>
+                                                <div className='flex flex-col gap-1 text-sm'>
+                                                        {isDiscounted && (
+                                                                <span className='text-xs text-kingdom-cream/50 line-through'>
                                                                         {formatMRU(price)}
                                                                 </span>
-                                                                <span className='text-lg font-semibold'>
-                                                                        {formatMRU(discountedPrice)}
-                                                                </span>
-                                                        </div>
-                                                ) : (
-                                                        <span className='text-lg font-semibold'>{formatMRU(price)}</span>
-                                                )}
+                                                        )}
+                                                        <span className='text-xl font-semibold text-kingdom-gold'>
+                                                                {formatMRU(discountedPrice || price)}
+                                                        </span>
+                                                </div>
+                                                <button
+                                                        type='button'
+                                                        className='inline-flex items-center gap-2 rounded-full border border-kingdom-gold/50 bg-kingdom-gold/20 px-4 py-2 text-sm font-semibold text-kingdom-gold transition hover:bg-kingdom-gold/30'
+                                                        onClick={handleAddToCart}
+                                                >
+                                                        <ShoppingCart size={18} />
+                                                        {t("common.actions.addToCart")}
+                                                </button>
                                         </div>
-                                        <button
-                                                className='inline-flex items-center justify-center gap-2 rounded-full bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal shadow-[0_0_0_rgba(0,0,0,0)] transition-royal focus-outline hover:shadow-royal-glow'
-                                                onClick={handleAddToCart}
-                                        >
-                                                <ShoppingCart size={18} />
-                                                {t("common.actions.addToCart")}
-                                        </button>
                                 </div>
                         </div>
-                </article>
+                </motion.article>
         );
 };
 export default ProductCard;

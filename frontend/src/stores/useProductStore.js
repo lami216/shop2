@@ -8,6 +8,7 @@ export const useProductStore = create((set, get) => ({
         selectedProduct: null,
         loading: false,
         productDetailsLoading: false,
+        error: null,
 
         setProducts: (products) => {
                 const currentSelected = get().selectedProduct;
@@ -57,22 +58,22 @@ export const useProductStore = create((set, get) => ({
                 }
         },
         fetchAllProducts: async () => {
-                set({ loading: true });
+                set({ loading: true, error: null });
                 try {
                         const data = await apiClient.get(`/products`);
                         get().setProducts(data.products);
-                        set({ loading: false });
+                        set({ loading: false, error: null });
                 } catch (error) {
                         set({ error: translate("toast.fetchProductsError"), loading: false });
                         toast.error(error.response?.data?.message || translate("toast.fetchProductsError"));
                 }
         },
         fetchProductsByCategory: async (category) => {
-                set({ loading: true });
+                set({ loading: true, error: null });
                 try {
                         const data = await apiClient.get(`/products/category/${category}`);
                         get().setProducts(data.products);
-                        set({ loading: false });
+                        set({ loading: false, error: null });
                 } catch (error) {
                         set({ error: translate("toast.fetchProductsError"), loading: false });
                         toast.error(error.response?.data?.message || translate("toast.fetchProductsError"));
@@ -143,7 +144,7 @@ export const useProductStore = create((set, get) => ({
                 }
         },
         fetchFeaturedProducts: async () => {
-                set({ loading: true });
+                set({ loading: true, error: null });
                 try {
                         const data = await apiClient.get(`/products/featured`);
                         get().setProducts(data);
