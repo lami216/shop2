@@ -54,13 +54,6 @@ const Hero = () => {
                                                 >
                                                         اكتشف التشكيلة الملكية
                                                 </a>
-                                                <a
-                                                        href='#collections'
-                                                        onClick={scrollToCollections}
-                                                        className='inline-flex items-center justify-center gap-2 rounded-full border border-kingdom-gold/40 px-6 py-3 text-base font-semibold text-kingdom-gold transition-royal focus-outline hover:bg-kingdom-purple/60 hover:text-white'
-                                                >
-                                                        تصفح المجموعات
-                                                </a>
                                         </div>
                                 </div>
                                 <div className='lg:col-span-5'>

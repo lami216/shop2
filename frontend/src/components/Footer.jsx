@@ -42,7 +42,7 @@ const socialLinks = [
 const Footer = () => {
         const buildTime = new Date(import.meta.env.VITE_BUILD_TIME).toLocaleString();
         return (
-                <footer className='mt-24 bg-kingdom-plum text-kingdom-ivory'>
+                <footer className='bg-kingdom-plum text-kingdom-ivory'>
                         <div className='mx-auto flex flex-col gap-10 px-6 py-12 text-center sm:gap-12 sm:px-8 lg:max-w-6xl lg:px-0'>
                                 <div className='flex flex-col gap-6'>
                                         <h2 className='text-2xl font-semibold tracking-[0.18em] text-kingdom-gold'>مملكة العطور</h2>
