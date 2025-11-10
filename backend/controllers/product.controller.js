@@ -48,6 +48,14 @@ const normalizeDiscountSettings = ({
         return { isDiscounted: false, discountPercentage: 0 };
 };
 
+const escapeRegex = (value) => {
+        if (typeof value !== "string") {
+                return "";
+        }
+
+        return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 const finalizeProductPayload = (product) => {
         if (!product) return product;
 
@@ -83,6 +91,38 @@ export const getAllProducts = async (req, res) => {
                 res.json({ products: products.map(finalizeProductPayload) });
         } catch (error) {
                 console.log("Error in getAllProducts controller", error.message);
+                res.status(500).json({ message: "Server error", error: error.message });
+        }
+};
+
+export const searchProducts = async (req, res) => {
+        try {
+                const { q = "", category, limit = 8 } = req.query;
+                const trimmedQuery = typeof q === "string" ? q.trim() : "";
+
+                if (!trimmedQuery) {
+                        return res.json({ products: [] });
+                }
+
+                const sanitizedLimit = Math.max(1, Math.min(Number(limit) || 8, 24));
+                const pattern = new RegExp(escapeRegex(trimmedQuery), "i");
+
+                const filters = {
+                        $or: [{ name: pattern }, { description: pattern }],
+                };
+
+                if (typeof category === "string" && category.trim()) {
+                        filters.category = category.trim();
+                }
+
+                const results = await Product.find(filters)
+                        .sort({ createdAt: -1 })
+                        .limit(sanitizedLimit)
+                        .lean({ virtuals: true });
+
+                res.json({ products: results.map(finalizeProductPayload) });
+        } catch (error) {
+                console.log("Error in searchProducts controller", error.message);
                 res.status(500).json({ message: "Server error", error: error.message });
         }
 };

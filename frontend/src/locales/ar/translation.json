@@ -361,6 +361,7 @@
         "categoryPage": {
                 "title": "{{category}}",
                 "noProducts": "لا توجد منتجات",
+                "noSearchResults": "لا توجد نتائج مطابقة لبحثك",
                 "searchPlaceholder": "ابحث داخل {{category}}",
                 "searchTag": "فرز ذكي حسب الفئة",
                 "resultsCount": "{{count}} عنصر"

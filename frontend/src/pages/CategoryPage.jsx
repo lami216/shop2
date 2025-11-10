@@ -6,9 +6,20 @@ import useTranslation from "../hooks/useTranslation";
 import ProductCard from "../components/ProductCard";
 import { useCategoryStore } from "../stores/useCategoryStore";
 import SiteSearchBar from "../components/SiteSearchBar";
+import useDebounce from "../hooks/useDebounce";
 
 const CategoryPage = () => {
-        const { fetchProductsByCategory, products, loading, error } = useProductStore();
+        const {
+                fetchProductsByCategory,
+                products,
+                loading,
+                error,
+                searchProducts,
+                searchResults,
+                searchLoading,
+                searchError,
+                clearSearchResults,
+        } = useProductStore();
         const { categories, fetchCategories } = useCategoryStore();
         const { category } = useParams();
         const { t } = useTranslation();
@@ -33,7 +44,22 @@ const CategoryPage = () => {
                 return fallback;
         }, [categories, category]);
 
-        const filteredProducts = useMemo(() => {
+        const debouncedSearchTerm = useDebounce(searchTerm, 250);
+        const normalizedSearchTerm = debouncedSearchTerm.trim();
+        const shouldSearchRemotely = normalizedSearchTerm.length > 0;
+
+        useEffect(() => {
+                if (!shouldSearchRemotely) {
+                        clearSearchResults();
+                        return;
+                }
+
+                searchProducts({ query: normalizedSearchTerm, category });
+        }, [shouldSearchRemotely, normalizedSearchTerm, category, searchProducts, clearSearchResults]);
+
+        useEffect(() => clearSearchResults, [clearSearchResults]);
+
+        const locallyFilteredProducts = useMemo(() => {
                 if (!searchTerm.trim()) return products;
                 const normalized = searchTerm.trim().toLowerCase();
                 return products.filter((product) =>
@@ -42,6 +68,9 @@ const CategoryPage = () => {
                                 .some((field) => field.toLowerCase().includes(normalized))
                 );
         }, [products, searchTerm]);
+
+        const filteredProducts = shouldSearchRemotely ? searchResults : locallyFilteredProducts;
+        const activeError = searchError || error;
 
         return (
                 <div className='min-h-screen bg-gradient-to-br from-[#0A050D] via-kingdom-plum/95 to-[#010104] text-kingdom-cream'>
@@ -94,7 +123,7 @@ const CategoryPage = () => {
                                 >
                                         <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3'>
                                                 <AnimatePresence mode='wait'>
-                                                        {loading && (
+                                                        {(loading || searchLoading) && (
                                                                 <motion.div
                                                                         key='loading'
                                                                         className='col-span-full grid gap-6 sm:grid-cols-2 xl:grid-cols-3'
@@ -107,7 +136,7 @@ const CategoryPage = () => {
                                                                         ))}
                                                                 </motion.div>
                                                         )}
-                                                        {!loading && error && (
+                                                        {!loading && !searchLoading && activeError && (
                                                                 <motion.div
                                                                         key='error'
                                                                         className='col-span-full rounded-[2.5rem] border border-red-400/40 bg-red-500/10 p-10 text-center text-sm text-red-200'
@@ -115,10 +144,10 @@ const CategoryPage = () => {
                                                                         animate={{ opacity: 1, y: 0 }}
                                                                         exit={{ opacity: 0, y: -10 }}
                                                                 >
-                                                                        {error}
+                                                                        {activeError}
                                                                 </motion.div>
                                                         )}
-                                                        {!loading && !error && filteredProducts.length === 0 && (
+                                                        {!loading && !searchLoading && !activeError && filteredProducts.length === 0 && (
                                                                 <motion.div
                                                                         key='empty'
                                                                         className='col-span-full rounded-[2.5rem] border border-white/10 bg-black/30 p-12 text-center text-lg text-kingdom-cream/60 shadow-[0_28px_60px_-48px_rgba(0,0,0,0.8)]'
@@ -126,10 +155,13 @@ const CategoryPage = () => {
                                                                         animate={{ opacity: 1, y: 0 }}
                                                                         exit={{ opacity: 0, y: -10 }}
                                                                 >
-                                                                        {t("categoryPage.noProducts")}
+                                                                        {shouldSearchRemotely
+                                                                                ? t("categoryPage.noSearchResults")
+                                                                                : t("categoryPage.noProducts")}
                                                                 </motion.div>
                                                         )}
-                                                        {!loading && !error && filteredProducts.map((product) => (
+                                                        {!loading && !searchLoading && !activeError &&
+                                                                filteredProducts.map((product) => (
                                                                 <motion.div
                                                                         key={product._id}
                                                                         initial={{ opacity: 0, y: 20 }}
