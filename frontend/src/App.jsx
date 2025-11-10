@@ -43,7 +43,7 @@ function App() {
 	if (checkingAuth) return <LoadingSpinner />;
 
         return (
-                <div className='relative min-h-screen bg-kingdom-ivory text-kingdom-charcoal'>
+                <div className='relative min-h-screen bg-[#040107] text-kingdom-charcoal'>
                         <Navbar />
                         <div className='relative z-40 pt-20 lg:pt-24'>
                                 <Routes>

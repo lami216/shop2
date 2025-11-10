@@ -17,7 +17,8 @@
         }
 
         body {
-                @apply bg-kingdom-ivory text-kingdom-charcoal font-royal antialiased leading-relaxed;
+                @apply text-kingdom-charcoal font-royal antialiased leading-relaxed;
+                background-color: #040107;
         }
 
         ::selection {

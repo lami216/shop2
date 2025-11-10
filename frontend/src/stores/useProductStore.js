@@ -9,6 +9,9 @@ export const useProductStore = create((set, get) => ({
         loading: false,
         productDetailsLoading: false,
         error: null,
+        searchResults: [],
+        searchLoading: false,
+        searchError: null,
 
         setProducts: (products) => {
                 const currentSelected = get().selectedProduct;
@@ -152,6 +155,36 @@ export const useProductStore = create((set, get) => ({
                 } catch (error) {
                         set({ error: translate("toast.fetchProductsError"), loading: false });
                         console.log("Error fetching featured products:", error);
+                }
+        },
+        clearSearchResults: () => set({ searchResults: [], searchLoading: false, searchError: null }),
+        searchProducts: async ({ query, category, limit = 8 } = {}) => {
+                const trimmedQuery = typeof query === "string" ? query.trim() : "";
+
+                if (!trimmedQuery) {
+                        set({ searchResults: [], searchLoading: false, searchError: null });
+                        return;
+                }
+
+                set({ searchLoading: true, searchError: null });
+
+                try {
+                        const data = await apiClient.get(`/products/search`, {
+                                params: {
+                                        q: trimmedQuery,
+                                        category,
+                                        limit,
+                                },
+                        });
+
+                        const results = Array.isArray(data?.products) ? data.products : [];
+                        set({ searchResults: results, searchLoading: false, searchError: null });
+                } catch (error) {
+                        set({
+                                searchResults: [],
+                                searchLoading: false,
+                                searchError: error.response?.data?.message || translate("toast.fetchProductsError"),
+                        });
                 }
         },
 }));

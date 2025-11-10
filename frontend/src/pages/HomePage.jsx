@@ -6,7 +6,6 @@ import { useProductStore } from "../stores/useProductStore";
 import FeaturedProducts from "../components/FeaturedProducts";
 import { useCategoryStore } from "../stores/useCategoryStore";
 import Hero from "../components/Hero";
-import SiteSearchBar from "../components/SiteSearchBar";
 
 const HomePage = () => {
         const { fetchFeaturedProducts, products, loading: productsLoading } = useProductStore();
@@ -34,19 +33,7 @@ const HomePage = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.7, delay: 0.1 }}
                                 >
-                                        <SiteSearchBar
-                                                placeholder={t("home.searchPlaceholder")}
-                                                className='px-0 pt-0'
-                                        >
-                                                <span className='text-xs uppercase tracking-[0.24em] text-kingdom-cream/60'>
-                                                        {t("home.searchTagline")}
-                                                </span>
-                                                <span className='text-sm font-semibold text-kingdom-gold'>
-                                                        {t("home.searchHint")}
-                                                </span>
-                                        </SiteSearchBar>
-
-                                        <div className='mt-10 text-center'>
+                                        <div className='text-center'>
                                                 <h2 className='text-3xl font-semibold tracking-[0.2em] text-kingdom-gold sm:text-4xl'>
                                                         {t("home.titleLine1")}
                                                 </h2>

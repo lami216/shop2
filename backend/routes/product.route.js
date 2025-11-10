@@ -6,6 +6,7 @@ import {
         getFeaturedProducts,
         getProductById,
         getProductsByCategory,
+        searchProducts,
         getRecommendedProducts,
         toggleFeaturedProduct,
         updateProduct,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.get("/", protectRoute, adminRoute, getAllProducts);
 router.get("/featured", getFeaturedProducts);
+router.get("/search", searchProducts);
 router.get("/category/:category", getProductsByCategory);
 router.get("/recommendations", getRecommendedProducts);
 router.get("/:id", getProductById);
