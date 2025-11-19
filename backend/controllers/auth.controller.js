@@ -2,10 +2,20 @@ import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
+const normalizeString = (value) => {
+        if (value === undefined || value === null) {
+                return "";
+        }
+
+        return value.toString().trim();
+};
+
+const normalizeEmail = (value) => normalizeString(value).toLowerCase();
+
 const generateTokens = (userId) => {
-	const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-		expiresIn: "15m",
-	});
+        const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: "15m",
+        });
 
 	const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
 		expiresIn: "7d",
@@ -34,18 +44,28 @@ const setCookies = (res, accessToken, refreshToken) => {
 };
 
 export const signup = async (req, res) => {
-	const { email, password, name } = req.body;
-	try {
-		const userExists = await User.findOne({ email });
+        const normalizedName = normalizeString(req.body?.name);
+        const normalizedEmail = normalizeEmail(req.body?.email);
+        const normalizedPassword =
+                typeof req.body?.password === "string" ? req.body.password.trim() : "";
+        try {
+                const userExists = await User.findOne({ email: normalizedEmail });
 
-		if (userExists) {
-			return res.status(400).json({ message: "User already exists" });
-		}
-		const user = await User.create({ name, email, password });
+                if (userExists) {
+                        return res.status(400).json({ message: "User already exists" });
+                }
 
-		// authenticate
-		const { accessToken, refreshToken } = generateTokens(user._id);
-		await storeRefreshToken(user._id, refreshToken);
+                const userPayload = {
+                        name: normalizedName,
+                        email: normalizedEmail,
+                        password: normalizedPassword,
+                };
+
+                const user = await User.create(userPayload);
+
+                // authenticate
+                const { accessToken, refreshToken } = generateTokens(user._id);
+                await storeRefreshToken(user._id, refreshToken);
 
 		setCookies(res, accessToken, refreshToken);
 
@@ -59,12 +79,13 @@ export const signup = async (req, res) => {
 		console.log("Error in signup controller", error.message);
 		res.status(500).json({ message: error.message });
 	}
-};
+}; 
 
 export const login = async (req, res) => {
-	try {
-		const { email, password } = req.body;
-		const user = await User.findOne({ email });
+        try {
+                const email = normalizeEmail(req.body?.email);
+                const password = typeof req.body?.password === "string" ? req.body.password : "";
+                const user = await User.findOne({ email });
 
 		if (user && (await user.comparePassword(password))) {
 			const { accessToken, refreshToken } = generateTokens(user._id);

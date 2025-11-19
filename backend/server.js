@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import path from "path";
+import path from "node:path";
 import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.route.js";

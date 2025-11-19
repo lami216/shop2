@@ -1,5 +1,20 @@
 import Coupon from "../models/coupon.model.js";
 
+const normalizeString = (value) => {
+        if (value === undefined || value === null) {
+                return "";
+        }
+
+        return value.toString().trim();
+};
+
+const normalizeUpperString = (value) => normalizeString(value).toUpperCase();
+
+const normalizeNumber = (value, defaultValue = 0) => {
+        const numericValue = Number(value);
+        return Number.isFinite(numericValue) ? numericValue : defaultValue;
+};
+
 const buildCouponQuery = (req) => {
         const now = new Date();
         return {
@@ -27,15 +42,13 @@ export const getCoupon = async (req, res) => {
 
 export const validateCoupon = async (req, res) => {
         try {
-                const { code } = req.body;
+                const code = normalizeUpperString(req.body?.code);
 
-                if (!code || typeof code !== "string") {
+                if (!code) {
                         return res.status(400).json({ message: "رمز القسيمة غير صالح" });
                 }
 
-                const normalizedCode = code.trim().toUpperCase();
-
-                const coupon = await Coupon.findOne({ code: normalizedCode });
+                const coupon = await Coupon.findOne({ code });
 
                 if (!coupon) {
                         return res.status(404).json({ message: "القسيمة غير موجودة" });
@@ -143,16 +156,16 @@ const generateCode = ({ prefix = "KING", length = 6 }) => {
 
 const normalizeCouponPayload = (payload = {}) => {
         const normalized = {
-                code: payload.code?.trim().toUpperCase(),
-                label: payload.label?.trim(),
-                description: payload.description?.trim(),
-                discountPercentage: Number(payload.discountPercentage),
-                minOrderValue: Number(payload.minOrderValue) || 0,
+                code: normalizeUpperString(payload.code),
+                label: normalizeString(payload.label),
+                description: normalizeString(payload.description),
+                discountPercentage: normalizeNumber(payload.discountPercentage),
+                minOrderValue: normalizeNumber(payload.minOrderValue),
                 startDate: payload.startDate ? new Date(payload.startDate) : undefined,
                 expirationDate: payload.expirationDate ? new Date(payload.expirationDate) : undefined,
-                usageLimit: Number(payload.usageLimit) || 0,
+                usageLimit: normalizeNumber(payload.usageLimit),
                 assignedUser: payload.assignedUser || null,
-                batchId: payload.batchId,
+                batchId: normalizeString(payload.batchId),
         };
 
         if (Number.isNaN(normalized.discountPercentage) || normalized.discountPercentage <= 0) {
@@ -176,7 +189,8 @@ const normalizeCouponPayload = (payload = {}) => {
 
 export const createCoupons = async (req, res) => {
         try {
-                const { mode = "single", quantity = 1, prefix, length, ...payload } = req.body;
+                const { mode = "single", quantity = 1, prefix, length, ...payload } = req.body || {};
+                const normalizedPrefix = normalizeUpperString(prefix);
                 const createdBy = req.user?._id;
 
                 if (mode === "bulk") {
@@ -185,7 +199,10 @@ export const createCoupons = async (req, res) => {
                         const couponsToCreate = [];
 
                         while (generatedCodes.size < numericQuantity) {
-                                const code = generateCode({ prefix, length: Number(length) || 6 });
+                                const code = generateCode({
+                                        prefix: normalizedPrefix || undefined,
+                                        length: Number(length) || 6,
+                                });
                                 if (generatedCodes.has(code)) continue;
 
                                 const exists = await Coupon.exists({ code });
@@ -193,7 +210,11 @@ export const createCoupons = async (req, res) => {
 
                                 generatedCodes.add(code);
                                 const normalized = normalizeCouponPayload({ ...payload, code });
-                                couponsToCreate.push({ ...normalized, createdBy, batchId: payload.batchId || prefix });
+                                couponsToCreate.push({
+                                        ...normalized,
+                                        createdBy,
+                                        batchId: normalized.batchId || normalizedPrefix || prefix,
+                                });
                         }
 
                         const documents = await Coupon.insertMany(couponsToCreate);
@@ -226,7 +247,7 @@ export const createCoupons = async (req, res) => {
 export const updateCoupon = async (req, res) => {
         try {
                 const { id } = req.params;
-                const normalizedPayload = normalizeCouponPayload(req.body);
+                const normalizedPayload = normalizeCouponPayload(req.body || {});
 
                 if (!normalizedPayload.code) {
                         return res.status(400).json({ message: "يجب تحديد رمز القسيمة" });
