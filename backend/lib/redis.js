@@ -1,7 +1,6 @@
 // backend/lib/redis.js
 import Redis from "ioredis";
 import dotenv from "dotenv";
-import path from "path";
 
 // نحمّل المتغيرات من ملف النظام الثابت (خارج المشروع)
 dotenv.config({ path: "/etc/shop2/.env" });
