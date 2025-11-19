@@ -2,7 +2,7 @@ const clamp = (value) => Math.max(0, Math.min(255, value));
 
 const hexToRgb = (hex) => {
         if (!hex) return null;
-        const normalized = hex.replace("#", "");
+        const normalized = hex.replaceAll("#", "");
         if (![3, 6].includes(normalized.length)) return null;
         const chunkSize = normalized.length === 3 ? 1 : 2;
         const chunks = normalized.match(new RegExp(`.{${chunkSize}}`, "g"));

@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { useCartStore } from "../stores/useCartStore";
 import { formatMRU } from "../lib/formatMRU";
@@ -111,3 +112,16 @@ const CartItem = ({ item }) => {
         );
 };
 export default CartItem;
+
+CartItem.propTypes = {
+        item: PropTypes.shape({
+                _id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired,
+                image: PropTypes.string,
+                quantity: PropTypes.number,
+                price: PropTypes.number,
+                discountedPrice: PropTypes.number,
+                discountPercentage: PropTypes.number,
+                isDiscounted: PropTypes.bool,
+        }).isRequired,
+};

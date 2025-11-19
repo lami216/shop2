@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, Loader2, Search, Slash, X } from "lucide-react";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { ORDER_STATUSES, useOrderStore } from "../stores/useOrderStore";
 import { formatMRU } from "../lib/formatMRU";
@@ -407,3 +408,41 @@ const CancelOrderModal = ({ context, onDismiss, onConfirm }) => {
 };
 
 export default OrdersTab;
+
+const customerShape = PropTypes.shape({
+        name: PropTypes.string,
+        phone: PropTypes.string,
+        email: PropTypes.string,
+});
+
+const orderShape = PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        customer: customerShape,
+        totalQuantity: PropTypes.number.isRequired,
+        totalAmount: PropTypes.number.isRequired,
+        paymentMethod: PropTypes.string,
+        status: PropTypes.string.isRequired,
+        notes: PropTypes.string,
+});
+
+StatsCard.propTypes = {
+        title: PropTypes.string.isRequired,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        accent: PropTypes.string.isRequired,
+};
+
+OrderRow.propTypes = {
+        order: orderShape.isRequired,
+        onStatusChange: PropTypes.func.isRequired,
+        onCancel: PropTypes.func.isRequired,
+        disabled: PropTypes.bool,
+};
+
+CancelOrderModal.propTypes = {
+        context: PropTypes.shape({
+                orderId: PropTypes.string.isRequired,
+                customerName: PropTypes.string,
+        }),
+        onDismiss: PropTypes.func.isRequired,
+        onConfirm: PropTypes.func.isRequired,
+};

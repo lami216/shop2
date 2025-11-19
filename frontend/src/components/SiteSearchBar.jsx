@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 
 const SiteSearchBar = ({
@@ -72,3 +73,14 @@ const SiteSearchBar = ({
 };
 
 export default SiteSearchBar;
+
+SiteSearchBar.propTypes = {
+        value: PropTypes.string,
+        defaultValue: PropTypes.string,
+        placeholder: PropTypes.string,
+        onChange: PropTypes.func,
+        onSubmit: PropTypes.func,
+        actionLabel: PropTypes.string,
+        className: PropTypes.string,
+        children: PropTypes.node,
+};

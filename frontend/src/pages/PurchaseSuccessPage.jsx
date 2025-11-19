@@ -44,11 +44,17 @@ const PurchaseSuccessPage = () => {
                         setError(null);
                 };
 
-                const sessionId = new URLSearchParams(window.location.search).get("session_id");
+                const searchParams =
+                        typeof globalThis !== "undefined"
+                                ? new URLSearchParams(globalThis.location.search)
+                                : new URLSearchParams();
+                const sessionId = searchParams.get("session_id");
                 if (isWhatsAppState) {
                         sessionStorage.removeItem("whatsappOrderSent");
                         finalizeWhatsAppOrder();
-                        navigate(window.location.pathname, { replace: true, state: null });
+                        if (typeof globalThis !== "undefined") {
+                                navigate(globalThis.location.pathname, { replace: true, state: null });
+                        }
                 } else if (sessionId) {
                         sessionStorage.removeItem("whatsappOrderSent");
                         handleCheckoutSuccess(sessionId);

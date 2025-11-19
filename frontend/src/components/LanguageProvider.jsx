@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import PropTypes from "prop-types";
 
 const LanguageProvider = ({ children }) => {
         useEffect(() => {
@@ -10,3 +11,7 @@ const LanguageProvider = ({ children }) => {
 };
 
 export default LanguageProvider;
+
+LanguageProvider.propTypes = {
+        children: PropTypes.node.isRequired,
+};
