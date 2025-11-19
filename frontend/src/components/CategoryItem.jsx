@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 
 const CategoryItem = ({ category }) => {
@@ -43,3 +44,12 @@ const CategoryItem = ({ category }) => {
 };
 
 export default CategoryItem;
+
+CategoryItem.propTypes = {
+        category: PropTypes.shape({
+                _id: PropTypes.string,
+                name: PropTypes.string.isRequired,
+                slug: PropTypes.string.isRequired,
+                imageUrl: PropTypes.string,
+        }).isRequired,
+};

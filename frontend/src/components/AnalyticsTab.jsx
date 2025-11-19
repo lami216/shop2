@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Users, Package, ShoppingCart, DollarSign } from "lucide-react";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import apiClient from "../lib/apiClient";
@@ -130,3 +131,10 @@ const AnalyticsCard = ({ title, value, icon: Icon, gradient }) => (
                 <div className='absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-70' />
         </motion.div>
 );
+
+AnalyticsCard.propTypes = {
+        title: PropTypes.string.isRequired,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        icon: PropTypes.elementType.isRequired,
+        gradient: PropTypes.string.isRequired,
+};

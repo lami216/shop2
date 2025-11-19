@@ -1,6 +1,7 @@
 import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { useCartStore } from "../stores/useCartStore";
 import { formatMRU } from "../lib/formatMRU";
@@ -96,3 +97,24 @@ const ProductCard = ({ product }) => {
         );
 };
 export default ProductCard;
+
+ProductCard.propTypes = {
+        product: PropTypes.shape({
+                _id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired,
+                description: PropTypes.string,
+                image: PropTypes.string,
+                images: PropTypes.arrayOf(
+                        PropTypes.oneOfType([
+                                PropTypes.string,
+                                PropTypes.shape({
+                                        url: PropTypes.string,
+                                }),
+                        ])
+                ),
+                price: PropTypes.number,
+                discountedPrice: PropTypes.number,
+                discountPercentage: PropTypes.number,
+                isDiscounted: PropTypes.bool,
+        }).isRequired,
+};

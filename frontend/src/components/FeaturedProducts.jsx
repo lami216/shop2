@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { useCartStore } from "../stores/useCartStore";
 import { formatMRU } from "../lib/formatMRU";
@@ -22,15 +23,20 @@ const FeaturedProducts = ({ featuredProducts }) => {
 
         useEffect(() => {
                 const handleResize = () => {
-                        if (window.innerWidth < 640) setItemsPerPage(1);
-                        else if (window.innerWidth < 1024) setItemsPerPage(2);
-                        else if (window.innerWidth < 1280) setItemsPerPage(3);
+                        const width = typeof globalThis !== "undefined" ? globalThis.innerWidth : 0;
+                        if (width < 640) setItemsPerPage(1);
+                        else if (width < 1024) setItemsPerPage(2);
+                        else if (width < 1280) setItemsPerPage(3);
                         else setItemsPerPage(4);
                 };
 
                 handleResize();
-                window.addEventListener("resize", handleResize);
-                return () => window.removeEventListener("resize", handleResize);
+                if (typeof globalThis !== "undefined") {
+                        globalThis.addEventListener("resize", handleResize);
+                        return () => globalThis.removeEventListener("resize", handleResize);
+                }
+
+                return undefined;
         }, []);
 
         useEffect(() => {
@@ -195,3 +201,44 @@ const PriceRow = ({ price, discountedPrice, isDiscounted, onAddToCart, ctaLabel,
 );
 
 export default FeaturedProducts;
+
+const productShape = PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        image: PropTypes.string,
+        images: PropTypes.arrayOf(
+                PropTypes.oneOfType([
+                        PropTypes.string,
+                        PropTypes.shape({
+                                url: PropTypes.string,
+                        }),
+                ])
+        ),
+        price: PropTypes.number,
+        discountedPrice: PropTypes.number,
+        discountPercentage: PropTypes.number,
+        isDiscounted: PropTypes.bool,
+});
+
+FeaturedProducts.propTypes = {
+        featuredProducts: PropTypes.arrayOf(productShape).isRequired,
+};
+
+LinkCard.propTypes = {
+        product: productShape.isRequired,
+        isDiscounted: PropTypes.bool.isRequired,
+        discountPercentage: PropTypes.number.isRequired,
+};
+
+ProductInfo.propTypes = {
+        product: productShape.isRequired,
+};
+
+PriceRow.propTypes = {
+        price: PropTypes.number.isRequired,
+        discountedPrice: PropTypes.number,
+        isDiscounted: PropTypes.bool.isRequired,
+        onAddToCart: PropTypes.func.isRequired,
+        ctaLabel: PropTypes.string.isRequired,
+        badge: PropTypes.string,
+};

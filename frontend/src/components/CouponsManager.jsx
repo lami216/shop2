@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, Loader2, MoreHorizontal, Plus, RefreshCw, Tag, TicketPercent, Trash2, X } from "lucide-react";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { useAdminCouponStore } from "../stores/useAdminCouponStore";
 
@@ -667,3 +668,40 @@ const createInitialState = (mode, coupon) => ({
 });
 
 export default CouponsManager;
+
+const couponShape = PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        code: PropTypes.string.isRequired,
+        label: PropTypes.string,
+        description: PropTypes.string,
+        discountPercentage: PropTypes.number.isRequired,
+        usageLimit: PropTypes.number,
+        usageCount: PropTypes.number,
+        minOrderValue: PropTypes.number,
+        startDate: PropTypes.string,
+        expirationDate: PropTypes.string,
+        isActive: PropTypes.bool,
+});
+
+CouponStatCard.propTypes = {
+        title: PropTypes.string.isRequired,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        icon: PropTypes.elementType.isRequired,
+        accent: PropTypes.string.isRequired,
+};
+
+CouponRow.propTypes = {
+        coupon: couponShape.isRequired,
+        onToggle: PropTypes.func.isRequired,
+        onDelete: PropTypes.func.isRequired,
+        onEdit: PropTypes.func.isRequired,
+};
+
+CouponModal.propTypes = {
+        open: PropTypes.bool.isRequired,
+        onClose: PropTypes.func.isRequired,
+        mode: PropTypes.oneOf(["single", "bulk"]).isRequired,
+        coupon: couponShape,
+        onCreate: PropTypes.func.isRequired,
+        onUpdate: PropTypes.func.isRequired,
+};

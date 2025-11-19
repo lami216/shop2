@@ -4,12 +4,21 @@ const useDebounce = (value, delay = 300) => {
         const [debouncedValue, setDebouncedValue] = useState(value);
 
         useEffect(() => {
-                const timer = window.setTimeout(() => {
+                const scheduleTimeout =
+                        typeof globalThis !== "undefined" && globalThis.setTimeout
+                                ? globalThis.setTimeout
+                                : setTimeout;
+                const clearScheduled =
+                        typeof globalThis !== "undefined" && globalThis.clearTimeout
+                                ? globalThis.clearTimeout
+                                : clearTimeout;
+
+                const timer = scheduleTimeout(() => {
                         setDebouncedValue(value);
                 }, delay);
 
                 return () => {
-                        window.clearTimeout(timer);
+                        clearScheduled(timer);
                 };
         }, [value, delay]);
 

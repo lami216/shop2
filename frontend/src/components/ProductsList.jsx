@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Trash, Star, Edit3 } from "lucide-react";
+import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import { useProductStore } from "../stores/useProductStore";
 import { formatMRU } from "../lib/formatMRU";
@@ -9,9 +10,11 @@ const ProductsList = ({ onEdit }) => {
         const { t } = useTranslation();
 
         const handleEdit = (product) => {
-                const confirmed = window.confirm(
-                        t("admin.productsTable.confirmations.edit", { name: product.name })
-                );
+                const confirmed =
+                        typeof globalThis !== "undefined" &&
+                        globalThis.confirm?.(
+                                t("admin.productsTable.confirmations.edit", { name: product.name })
+                        );
 
                 if (!confirmed) return;
 
@@ -22,9 +25,11 @@ const ProductsList = ({ onEdit }) => {
         };
 
         const handleDelete = (product) => {
-                const confirmed = window.confirm(
-                        t("admin.productsTable.confirmations.delete", { name: product.name })
-                );
+                const confirmed =
+                        typeof globalThis !== "undefined" &&
+                        globalThis.confirm?.(
+                                t("admin.productsTable.confirmations.delete", { name: product.name })
+                        );
 
                 if (!confirmed) return;
 
@@ -139,3 +144,7 @@ const ProductsList = ({ onEdit }) => {
         );
 };
 export default ProductsList;
+
+ProductsList.propTypes = {
+        onEdit: PropTypes.func,
+};

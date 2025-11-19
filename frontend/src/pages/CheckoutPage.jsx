@@ -122,6 +122,8 @@ const CheckoutPage = () => {
 
                 sessionStorage.setItem("lastOrderDetails", JSON.stringify(orderDetailsPayload));
 
+                const discountPercentage = coupon && isCouponApplied ? formatNumberEn(coupon.discountPercentage) : null;
+
                 const messageLines = [
                         t("checkout.messages.newOrder", { name: customerName }),
                         t("checkout.messages.customerWhatsApp", { number: displayCustomerNumber }),
@@ -129,29 +131,26 @@ const CheckoutPage = () => {
                         "",
                         t("checkout.messages.productsHeader"),
                         ...productsSummary,
+                        ...(productsSummary.length === 0
+                                ? [t("checkout.messages.noProducts")]
+                                : []),
+                        ...(discountPercentage
+                                ? [
+                                          "",
+                                          t("checkout.messages.coupon", {
+                                                  code: coupon.code,
+                                                  discount: discountPercentage,
+                                          }),
+                                  ]
+                                : []),
+                        ...(savings > 0
+                                ? ["", t("checkout.messages.savings", { amount: formatMRU(savings) })]
+                                : []),
+                        "",
+                        t("checkout.messages.total", { amount: formatMRU(total) }),
+                        "",
+                        t("checkout.messages.thanks"),
                 ];
-
-                if (productsSummary.length === 0) {
-                        messageLines.push(t("checkout.messages.noProducts"));
-                }
-
-                if (coupon && isCouponApplied) {
-                        const discountPercentage = formatNumberEn(coupon.discountPercentage);
-                        messageLines.push(
-                                "",
-                                t("checkout.messages.coupon", {
-                                        code: coupon.code,
-                                        discount: discountPercentage,
-                                })
-                        );
-                }
-
-                if (savings > 0) {
-                        messageLines.push("", t("checkout.messages.savings", { amount: formatMRU(savings) }));
-                }
-
-                messageLines.push("", t("checkout.messages.total", { amount: formatMRU(total) }));
-                messageLines.push("", t("checkout.messages.thanks"));
 
                 const DEFAULT_STORE_WHATSAPP_NUMBER = "22233063926";
                 const envStoreNumber = import.meta.env.VITE_STORE_WHATSAPP_NUMBER;
@@ -161,7 +160,9 @@ const CheckoutPage = () => {
                 whatsappURL.searchParams.set("text", messageLines.join("\n"));
 
                 try {
-                        window.open(whatsappURL.toString(), "_blank");
+                        if (typeof globalThis !== "undefined") {
+                                globalThis.open?.(whatsappURL.toString(), "_blank");
+                        }
                         sessionStorage.setItem("whatsappOrderSent", "true");
                         toast.success(t("checkout.messages.orderSent"));
                         await clearCart();
