@@ -86,7 +86,10 @@ const OrdersTab = () => {
                                         <p className='mt-2 text-sm text-kingdom-cream/70'>{t("orders.subtitle")}</p>
                                 </div>
                                 <div className='grid gap-3 sm:grid-cols-2 lg:flex lg:items-center lg:gap-4'>
-                                        <label className='relative flex h-12 w-full items-center overflow-hidden rounded-full border border-white/10 bg-white/10 px-4 text-sm text-kingdom-cream/70 shadow-[0_15px_35px_-28px_rgba(0,0,0,0.7)] focus-within:border-kingdom-gold/60 sm:col-span-2 lg:w-72'>
+                                        <label
+                                                className='relative flex h-12 w-full items-center overflow-hidden rounded-full border border-white/10 bg-white/10 px-4 text-sm text-kingdom-cream/70 shadow-[0_15px_35px_-28px_rgba(0,0,0,0.7)] focus-within:border-kingdom-gold/60 sm:col-span-2 lg:w-72'
+                                                aria-label={t("orders.filters.searchPlaceholder")}
+                                        >
                                                 <Search className='h-4 w-4 text-kingdom-cream/50' />
                                                 <input
                                                         type='search'

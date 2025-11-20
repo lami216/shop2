@@ -146,7 +146,10 @@ const CouponsManager = () => {
                         </div>
 
                         <div className='mt-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-                                <label className='flex h-12 w-full items-center gap-3 overflow-hidden rounded-full border border-white/10 bg-white/10 px-4 text-sm text-kingdom-cream/70 shadow-[0_15px_35px_-28px_rgba(0,0,0,0.7)] focus-within:border-kingdom-gold/60 lg:max-w-sm'>
+                                <label
+                                        className='flex h-12 w-full items-center gap-3 overflow-hidden rounded-full border border-white/10 bg-white/10 px-4 text-sm text-kingdom-cream/70 shadow-[0_15px_35px_-28px_rgba(0,0,0,0.7)] focus-within:border-kingdom-gold/60 lg:max-w-sm'
+                                        aria-label={t("coupons.filters.searchPlaceholder")}
+                                >
                                         <input
                                                 type='search'
                                                 value={searchTerm}
