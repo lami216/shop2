@@ -1,5 +1,13 @@
 import Product from "../models/product.model.js";
 
+const normalizeIdString = (value) => {
+        if (typeof value !== "string") {
+                return "";
+        }
+
+        return value.trim();
+};
+
 export const getCartProducts = async (req, res) => {
         try {
                 const productIds = req.user.cartItems
@@ -32,16 +40,21 @@ export const getCartProducts = async (req, res) => {
 export const addToCart = async (req, res) => {
         try {
                 const { productId, quantity } = req.body;
+                const normalizedProductId = normalizeIdString(productId);
                 const user = req.user;
+
+                if (!normalizedProductId) {
+                        return res.status(400).json({ message: "Product not found" });
+                }
 
                 const numericQuantity = Math.max(1, parseInt(quantity, 10) || 1);
 
                 const existingItemIndex = user.cartItems.findIndex((item) => {
                         if (item?.product) {
-                                return item.product.toString() === productId;
+                                return item.product.toString() === normalizedProductId;
                         }
 
-                        return item?.toString() === productId;
+                        return item?.toString() === normalizedProductId;
                 });
 
                 if (existingItemIndex !== -1) {
@@ -51,12 +64,12 @@ export const addToCart = async (req, res) => {
                                 existingItem.quantity += numericQuantity;
                         } else {
                                 user.cartItems[existingItemIndex] = {
-                                        product: productId,
+                                        product: normalizedProductId,
                                         quantity: (existingItem?.quantity ?? 1) + numericQuantity,
                                 };
                         }
                 } else {
-                        user.cartItems.push({ product: productId, quantity: numericQuantity });
+                        user.cartItems.push({ product: normalizedProductId, quantity: numericQuantity });
                 }
 
                 await user.save();
@@ -70,16 +83,17 @@ export const addToCart = async (req, res) => {
 export const removeAllFromCart = async (req, res) => {
         try {
                 const { productId } = req.body;
+                const normalizedProductId = normalizeIdString(productId);
                 const user = req.user;
-                if (!productId) {
+                if (!normalizedProductId) {
                         user.cartItems = [];
                 } else {
                         user.cartItems = user.cartItems.filter((item) => {
                                 if (item?.product) {
-                                        return item.product.toString() !== productId;
+                                        return item.product.toString() !== normalizedProductId;
                                 }
 
-                                return item?.toString() !== productId;
+                                return item?.toString() !== normalizedProductId;
                         });
                 }
                 await user.save();
@@ -94,13 +108,14 @@ export const updateQuantity = async (req, res) => {
                 const { id: productId } = req.params;
                 const { quantity } = req.body;
                 const user = req.user;
+                const normalizedProductId = normalizeIdString(productId);
                 const normalizedQuantity = Math.max(0, parseInt(quantity, 10) || 0);
                 const existingItemIndex = user.cartItems.findIndex((item) => {
                         if (item?.product) {
-                                return item.product.toString() === productId;
+                                return item.product.toString() === normalizedProductId;
                         }
 
-                        return item?.toString() === productId;
+                        return item?.toString() === normalizedProductId;
                 });
 
                 if (existingItemIndex !== -1) {
@@ -116,7 +131,7 @@ export const updateQuantity = async (req, res) => {
                                 existingItem.quantity = normalizedQuantity;
                         } else {
                                 user.cartItems[existingItemIndex] = {
-                                        product: productId,
+                                        product: normalizedProductId,
                                         quantity: normalizedQuantity,
                                 };
                         }

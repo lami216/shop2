@@ -1,15 +1,35 @@
 import Order from "../models/order.model.js";
 import Coupon from "../models/coupon.model.js";
 
+const normalizeString = (value) => {
+        if (value === undefined || value === null) {
+                return "";
+        }
+
+        return value.toString().trim();
+};
+
+const escapeRegex = (value) => {
+        if (typeof value !== "string") {
+                return "";
+        }
+
+        return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 const buildOrderFilters = ({ status, search }) => {
         const filters = {};
 
-        if (status && status !== "all") {
-                filters.status = status;
+        const normalizedStatus = normalizeString(status);
+
+        if (normalizedStatus && normalizedStatus !== "all") {
+                filters.status = normalizedStatus;
         }
 
-        if (search) {
-                const pattern = new RegExp(search.trim(), "i");
+        const trimmedSearch = normalizeString(search);
+
+        if (trimmedSearch) {
+                const pattern = new RegExp(escapeRegex(trimmedSearch), "i");
                 filters.$or = [
                         { "customer.name": pattern },
                         { "customer.phone": pattern },
@@ -78,9 +98,13 @@ export const updateOrderStatus = async (req, res) => {
                 const { id } = req.params;
                 const { status, paymentMethod } = req.body;
 
-                const allowedStatuses = ["pending", "processing", "shipped", "completed", "cancelled"];
+                const normalizedStatus = normalizeString(status);
+                const normalizedPaymentMethod = normalizeString(paymentMethod);
 
-                if (status && !allowedStatuses.includes(status)) {
+                const allowedStatuses = ["pending", "processing", "shipped", "completed", "cancelled"];
+                const allowedPaymentMethods = ["whatsapp", "cash", "card", "bank_transfer"];
+
+                if (normalizedStatus && !allowedStatuses.includes(normalizedStatus)) {
                         return res.status(400).json({ message: "حالة الطلب غير معتمدة" });
                 }
 
@@ -90,19 +114,27 @@ export const updateOrderStatus = async (req, res) => {
                         return res.status(404).json({ message: "الطلب غير موجود" });
                 }
 
-                if (order.status === "cancelled" && status && status !== "cancelled") {
+                if (
+                        order.status === "cancelled" &&
+                        normalizedStatus &&
+                        normalizedStatus !== "cancelled"
+                ) {
                         return res.status(400).json({ message: "لا يمكن إعادة تفعيل طلب ملغي" });
                 }
 
-                if (status) {
-                        order.status = status;
-                        if (status === "cancelled") {
+                if (normalizedStatus) {
+                        order.status = normalizedStatus;
+                        if (normalizedStatus === "cancelled") {
                                 order.cancelledAt = new Date();
                         }
                 }
 
-                if (paymentMethod) {
-                        order.paymentMethod = paymentMethod;
+                if (normalizedPaymentMethod) {
+                        if (!allowedPaymentMethods.includes(normalizedPaymentMethod)) {
+                                return res.status(400).json({ message: "طريقة دفع غير صالحة" });
+                        }
+
+                        order.paymentMethod = normalizedPaymentMethod;
                 }
 
                 await order.save();
@@ -129,8 +161,10 @@ export const cancelOrder = async (req, res) => {
                         return res.status(400).json({ message: "تم إلغاء الطلب بالفعل" });
                 }
 
+                const normalizedReason = normalizeString(reason);
+
                 order.status = "cancelled";
-                order.cancellationReason = reason?.trim();
+                order.cancellationReason = normalizedReason || undefined;
                 order.cancelledAt = new Date();
 
                 await order.save();
