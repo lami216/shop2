@@ -74,13 +74,15 @@ export const getDailySalesData = async (startDate, endDate) => {
 };
 
 function getDatesInRange(startDate, endDate) {
-	const dates = [];
-	let currentDate = new Date(startDate);
+        const dates = [];
 
-	while (currentDate <= endDate) {
-		dates.push(currentDate.toISOString().split("T")[0]);
-		currentDate.setDate(currentDate.getDate() + 1);
-	}
+        for (
+                let currentDate = new Date(startDate);
+                currentDate <= endDate;
+                currentDate.setDate(currentDate.getDate() + 1)
+        ) {
+                dates.push(currentDate.toISOString().split("T")[0]);
+        }
 
-	return dates;
+        return dates;
 }
