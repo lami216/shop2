@@ -10,6 +10,8 @@ const normalizeString = (value) => {
 
 const normalizeUpperString = (value) => normalizeString(value).toUpperCase();
 
+const normalizeIdString = (value) => (typeof value === "string" ? value.trim() : "");
+
 const normalizeNumber = (value, defaultValue = 0) => {
         const numericValue = Number(value);
         return Number.isFinite(numericValue) ? numericValue : defaultValue;
@@ -256,7 +258,7 @@ export const createCoupons = async (req, res) => {
 
 export const updateCoupon = async (req, res) => {
         try {
-                const { id } = req.params;
+                const couponId = normalizeIdString(req.params?.id);
                 const normalizedPayload = normalizeCouponPayload(req.body || {});
 
                 if (!normalizedPayload.code) {
@@ -264,7 +266,7 @@ export const updateCoupon = async (req, res) => {
                 }
 
                 const conflicting = await Coupon.findOne({
-                        _id: { $ne: id },
+                        _id: { $ne: couponId },
                         code: normalizedPayload.code,
                 });
 
@@ -272,11 +274,13 @@ export const updateCoupon = async (req, res) => {
                         return res.status(409).json({ message: "رمز القسيمة مستخدم بالفعل" });
                 }
 
-                const coupon = await Coupon.findByIdAndUpdate(
-                        id,
-                        { ...normalizedPayload },
-                        { new: true }
-                );
+                const coupon = couponId
+                        ? await Coupon.findByIdAndUpdate(
+                                  couponId,
+                                  { ...normalizedPayload },
+                                  { new: true }
+                          )
+                        : null;
 
                 if (!coupon) {
                         return res.status(404).json({ message: "القسيمة غير موجودة" });
@@ -291,8 +295,8 @@ export const updateCoupon = async (req, res) => {
 
 export const toggleCoupon = async (req, res) => {
         try {
-                const { id } = req.params;
-                const coupon = await Coupon.findById(id);
+                const couponId = normalizeIdString(req.params?.id);
+                const coupon = couponId ? await Coupon.findById(couponId) : null;
 
                 if (!coupon) {
                         return res.status(404).json({ message: "القسيمة غير موجودة" });
@@ -310,8 +314,8 @@ export const toggleCoupon = async (req, res) => {
 
 export const deleteCoupon = async (req, res) => {
         try {
-                const { id } = req.params;
-                const deleted = await Coupon.findByIdAndDelete(id);
+                const couponId = normalizeIdString(req.params?.id);
+                const deleted = couponId ? await Coupon.findByIdAndDelete(couponId) : null;
 
                 if (!deleted) {
                         return res.status(404).json({ message: "القسيمة غير موجودة" });

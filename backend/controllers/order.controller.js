@@ -9,6 +9,8 @@ const normalizeString = (value) => {
         return value.toString().trim();
 };
 
+const normalizeIdString = (value) => (typeof value === "string" ? value.trim() : "");
+
 const escapeRegex = (value) => {
         if (typeof value !== "string") {
                 return "";
@@ -95,7 +97,7 @@ export const getAdminOrders = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
         try {
-                const { id } = req.params;
+                const orderId = normalizeIdString(req.params?.id);
                 const { status, paymentMethod } = req.body;
 
                 const normalizedStatus = normalizeString(status);
@@ -108,7 +110,7 @@ export const updateOrderStatus = async (req, res) => {
                         return res.status(400).json({ message: "حالة الطلب غير معتمدة" });
                 }
 
-                const order = await Order.findById(id);
+                const order = orderId ? await Order.findById(orderId) : null;
 
                 if (!order) {
                         return res.status(404).json({ message: "الطلب غير موجود" });
@@ -148,10 +150,10 @@ export const updateOrderStatus = async (req, res) => {
 
 export const cancelOrder = async (req, res) => {
         try {
-                const { id } = req.params;
+                const orderId = normalizeIdString(req.params?.id);
                 const { reason } = req.body;
 
-                const order = await Order.findById(id);
+                const order = orderId ? await Order.findById(orderId) : null;
 
                 if (!order) {
                         return res.status(404).json({ message: "الطلب غير موجود" });

@@ -3,6 +3,13 @@ import { redis } from "../lib/redis.js";
 import cloudinary from "../lib/cloudinary.js";
 import Product from "../models/product.model.js";
 
+const normalizeString = (value) => (typeof value === "string" ? value.trim() : "");
+
+const normalizeOptionalString = (value) =>
+        typeof value === "string" ? value.trim() : undefined;
+
+const normalizeIdString = normalizeString;
+
 const toBoolean = (value) => {
         if (typeof value === "boolean") return value;
         if (typeof value === "number") return value !== 0;
@@ -255,7 +262,7 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
         try {
-                const { id } = req.params;
+                const productId = normalizeIdString(req.params?.id);
                 const {
                         name,
                         description,
@@ -268,7 +275,7 @@ export const updateProduct = async (req, res) => {
                         discountPercentage,
                 } = req.body;
 
-                const product = await Product.findById(id);
+                const product = productId ? await Product.findById(productId) : null;
 
                 if (!product) {
                         return res.status(404).json({ message: "Product not found" });
@@ -440,7 +447,8 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
         try {
-                const product = await Product.findById(req.params.id);
+                const productId = normalizeIdString(req.params?.id);
+                const product = productId ? await Product.findById(productId) : null;
 
                 if (!product) {
                         return res.status(404).json({ message: "Product not found" });
@@ -463,7 +471,9 @@ export const deleteProduct = async (req, res) => {
                         }
                 }
 
-                await Product.findByIdAndDelete(req.params.id);
+                if (productId) {
+                        await Product.findByIdAndDelete(productId);
+                }
 
                 if (product.isFeatured) {
                         await updateFeaturedProductsCache();
@@ -478,7 +488,8 @@ export const deleteProduct = async (req, res) => {
 
 export const getProductById = async (req, res) => {
         try {
-                const product = await Product.findById(req.params.id);
+                const productId = normalizeIdString(req.params?.id);
+                const product = productId ? await Product.findById(productId) : null;
 
                 if (!product) {
                         return res.status(404).json({ message: "Product not found" });
@@ -510,7 +521,7 @@ export const getRecommendedProducts = async (req, res) => {
                         },
                 };
 
-                let targetCategory = typeof category === "string" && category.trim() ? category.trim() : null;
+                let targetCategory = normalizeOptionalString(category) || null;
                 const excludedIds = [];
 
                 if (productId && mongoose.Types.ObjectId.isValid(productId)) {
@@ -560,7 +571,7 @@ export const getRecommendedProducts = async (req, res) => {
 };
 
 export const getProductsByCategory = async (req, res) => {
-        const { category } = req.params;
+        const category = normalizeString(req.params?.category);
         try {
                 const products = await Product.find({ category }).lean({ virtuals: true });
                 res.json({ products: products.map(finalizeProductPayload) });
@@ -572,7 +583,8 @@ export const getProductsByCategory = async (req, res) => {
 
 export const toggleFeaturedProduct = async (req, res) => {
         try {
-                const product = await Product.findById(req.params.id);
+                const productId = normalizeIdString(req.params?.id);
+                const product = productId ? await Product.findById(productId) : null;
                 if (product) {
                         product.isFeatured = !product.isFeatured;
                         const updatedProduct = await product.save();

@@ -1,6 +1,8 @@
 import Category from "../models/category.model.js";
 import cloudinary from "../lib/cloudinary.js";
 
+const normalizeIdString = (value) => (typeof value === "string" ? value.trim() : "");
+
 const isCloudinaryConfigured = () =>
         Boolean(
                 process.env.CLOUDINARY_CLOUD_NAME &&
@@ -130,10 +132,10 @@ export const createCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
         try {
-                const { id } = req.params;
+                const categoryId = normalizeIdString(req.params?.id);
                 const { name, description, image } = req.body;
 
-                const category = await Category.findById(id);
+                const category = categoryId ? await Category.findById(categoryId) : null;
 
                 if (!category) {
                         return res.status(404).json({ message: "Category not found" });
@@ -189,8 +191,8 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
         try {
-                const { id } = req.params;
-                const category = await Category.findById(id);
+                const categoryId = normalizeIdString(req.params?.id);
+                const category = categoryId ? await Category.findById(categoryId) : null;
 
                 if (!category) {
                         return res.status(404).json({ message: "Category not found" });
@@ -204,7 +206,9 @@ export const deleteCategory = async (req, res) => {
                         }
                 }
 
-                await Category.findByIdAndDelete(id);
+                if (categoryId) {
+                        await Category.findByIdAndDelete(categoryId);
+                }
 
                 res.json({ message: "Category deleted successfully" });
         } catch (error) {
