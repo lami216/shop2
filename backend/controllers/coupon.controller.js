@@ -15,6 +15,14 @@ const normalizeNumber = (value, defaultValue = 0) => {
         return Number.isFinite(numericValue) ? numericValue : defaultValue;
 };
 
+const escapeRegex = (value) => {
+        if (typeof value !== "string") {
+                return "";
+        }
+
+        return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 const buildCouponQuery = (req) => {
         const now = new Date();
         return {
@@ -111,8 +119,10 @@ export const listCoupons = async (req, res) => {
                 if (status === "active") query.isActive = true;
                 if (status === "inactive") query.isActive = false;
 
-                if (search) {
-                        const pattern = new RegExp(search.trim(), "i");
+                const trimmedSearch = typeof search === "string" ? search.trim() : "";
+
+                if (trimmedSearch) {
+                        const pattern = new RegExp(escapeRegex(trimmedSearch), "i");
                         query.$or = [
                                 { code: pattern },
                                 { label: pattern },
