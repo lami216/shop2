@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { apiClient } from "../lib/apiClient";
 import { useUserStore } from "../stores/useUserStore";
 import { confirmPayment, getMyPayments, initiatePayment } from "../services/paymentService";
+import TutorBadge from "../components/TutorBadge";
 
 const LEVEL_OPTIONS = [
         { value: "L1", label: "Level 1" },
@@ -223,7 +224,14 @@ const TutorProfilePage = () => {
         const [saving, setSaving] = useState(false);
         const [formState, setFormState] = useState(emptyProfileState);
 
-        const badgeLabel = useMemo(() => profile?.teacherBadge?.name || profile?.teacherBadge?.label, [profile]);
+        const badgeName = useMemo(
+                () => (profile?.teacherBadge?.name || profile?.teacherBadge?.label || "").toLowerCase(),
+                [profile]
+        );
+        const subscriptionRate = useMemo(() => {
+                const rate = profile?.subscriptionRate ?? profile?.teacherBadge?.subscriptionRate ?? null;
+                return rate == null ? null : Number(rate);
+        }, [profile]);
 
         const parseListInput = (value = "") =>
                 value
@@ -362,10 +370,14 @@ const TutorProfilePage = () => {
                                                                 <h2 className='text-2xl font-semibold text-kingdom-gold'>البيانات الأساسية</h2>
                                                                 <p className='text-sm text-kingdom-cream/60'>تأكد من دقة معلومات المواد والمستويات.</p>
                                                         </div>
-                                                        {badgeLabel && (
-                                                                <span className='rounded-full border border-kingdom-gold/40 px-3 py-1 text-xs uppercase tracking-wide text-kingdom-gold'>
-                                                                        Badge {badgeLabel}
-                                                                </span>
+                                                        {badgeName ? (
+                                                                <TutorBadge
+                                                                        badgeName={badgeName}
+                                                                        icon={profile?.teacherBadge?.icon}
+                                                                        color={profile?.teacherBadge?.color}
+                                                                />
+                                                        ) : (
+                                                                <span className='text-xs text-kingdom-cream/60'>لا توجد شارة بعد</span>
                                                         )}
                                                 </div>
 
@@ -519,6 +531,31 @@ const TutorProfilePage = () => {
                                         </div>
 
                                         <aside className='flex flex-col gap-4 rounded-2xl border border-kingdom-gold/30 bg-black/60 p-4 shadow-royal-soft'>
+                                                <div className='flex flex-col items-center gap-3 rounded-xl border border-kingdom-gold/20 bg-kingdom-charcoal/30 p-4'>
+                                                        <div className={`avatar-frame ${badgeName ? `avatar-frame-${badgeName}` : ""}`}>
+                                                                {user?.name?.[0] || "T"}
+                                                        </div>
+                                                        {badgeName ? (
+                                                                <TutorBadge
+                                                                        badgeName={badgeName}
+                                                                        icon={profile?.teacherBadge?.icon}
+                                                                        color={profile?.teacherBadge?.color}
+                                                                />
+                                                        ) : (
+                                                                <span className='text-sm text-kingdom-cream/70'>لا توجد شارة بعد</span>
+                                                        )}
+                                                        <p className='text-xs text-kingdom-cream/60'>TODO: استبدال هذه الإطارات بأيقونات ومواد مرئية مخصصة لاحقًا.</p>
+                                                        <div className='w-full rounded-lg border border-kingdom-gold/20 bg-black/40 p-3 text-sm'>
+                                                                <p className='text-kingdom-cream/70'>نسبة الاشتراك الحالية</p>
+                                                                <p className='text-lg font-semibold text-kingdom-gold'>
+                                                                        {subscriptionRate != null
+                                                                                ? `${(subscriptionRate * 100).toFixed(0)}%`
+                                                                                : "يتم التحديد بعد تحديث الدخل"}
+                                                                </p>
+                                                                <p className='mt-1 text-xs text-kingdom-cream/60'>هذه النسبة معلوماتية فقط حاليًا وسيتم استخدامها في منطق الفوترة لاحقًا.</p>
+                                                        </div>
+                                                </div>
+
                                                 <div className='rounded-xl border border-kingdom-gold/20 bg-kingdom-charcoal/30 p-3'>
                                                         <h3 className='text-lg font-semibold text-kingdom-gold'>المعلم</h3>
                                                         {user ? (
