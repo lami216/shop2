@@ -1,8 +1,8 @@
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import { UserPlus, LogIn, LogOut, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import useTranslation from "../hooks/useTranslation";
 import { useUserStore } from "../stores/useUserStore";
-import { useCartStore } from "../stores/useCartStore";
+import LogoMoltaqa from "./LogoMoltaqa";
 
 const arabesquePattern = encodeURIComponent(
         `<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200' fill='none'>
@@ -15,24 +15,15 @@ const arabesquePattern = encodeURIComponent(
 const Navbar = () => {
         const { user, logout } = useUserStore();
         const isAdmin = user?.role === "admin";
-        const { cart } = useCartStore();
-        const cartItemCount = cart.reduce((total, item) => total + (item.quantity ?? 0), 0);
         const { t } = useTranslation();
 
-        const cartLink = (
-                <Link
-                        to={'/cart'}
-                        className='relative group flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-kingdom-purple/30 px-4 py-2 text-sm font-semibold text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold hover:bg-kingdom-purple/60'
-                >
-                        <ShoppingCart size={18} className='transition-royal group-hover:text-kingdom-gold' />
-                        <span className='hidden sm:inline'>{t("nav.cart")}</span>
-                        {cartItemCount > 0 && (
-                                <span className='absolute -top-2 -right-2 rounded-full bg-kingdom-gold px-2 py-0.5 text-xs font-semibold text-kingdom-charcoal shadow-[0_4px_10px_rgba(212,175,55,0.35)] transition-royal group-hover:shadow-royal-glow'>
-                                        {cartItemCount}
-                                </span>
-                        )}
-                </Link>
-        );
+        const mainLinks = [
+                { to: "/", label: t("nav.home") },
+                { to: "/search", label: t("nav.search") },
+                { to: "/student/profile", label: t("nav.studentProfile") },
+                { to: "/tutor/profile", label: t("nav.tutorProfile") },
+                { to: "/admin", label: t("nav.adminDashboard") },
+        ];
 
         return (
                 <header className='fixed top-0 right-0 z-50 w-full border-b border-kingdom-gold/10 bg-gradient-to-br from-kingdom-purple/95 to-kingdom-plum/95 text-kingdom-ivory shadow-royal-soft backdrop-blur-xl'>
@@ -49,36 +40,30 @@ const Navbar = () => {
                                         <Link
                                                 to='/'
                                                 className='flex flex-row-reverse items-center gap-3 text-kingdom-gold transition-royal focus-outline hover:text-kingdom-ivory'
+                                                aria-label='الانتقال إلى ملتقى Moltaqa'
                                         >
-                                                <span className='text-2xl font-semibold tracking-[0.22em]'>مملكة العطور</span>
-                                                <span className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-current/40 bg-kingdom-purple/40 backdrop-blur-sm'>
-                                                                <svg
-                                                                        xmlns='http://www.w3.org/2000/svg'
-                                                                        viewBox='0 0 64 64'
-                                                                        className='h-7 w-7'
-                                                                        fill='none'
-                                                                        stroke='currentColor'
-                                                                        strokeWidth='1.8'
-                                                                        strokeLinecap='round'
-                                                                        strokeLinejoin='round'
-                                                                >
-                                                                        <circle cx='32' cy='32' r='22.5' opacity='0.6' />
-                                                                        <path d='M20 30c6-2 9-7 12-12 3 5 6 10 12 12-3 2-4 6-4 10h-16c0-4-1-8-4-10z' opacity='0.7' />
-                                                                        <path d='M26 40h12' />
-                                                                        <path d='M24 24l-2-5 10-5 10 5-2 5' />
-                                                                        <path d='M28 46h8l-2 6h-4z' opacity='0.7' />
-                                                                </svg>
-                                                </span>
+                                                <LogoMoltaqa />
                                         </Link>
 
                                         <div className='flex flex-col items-center gap-3 text-sm font-medium sm:flex-row sm:justify-end sm:gap-4'>
                                                 <nav className='flex items-center gap-4 text-kingdom-ivory/80'>
+                                                        {mainLinks.map((link) => (
+                                                                <Link
+                                                                        key={link.to}
+                                                                        to={link.to}
+                                                                        className='transition-royal focus-outline hover:text-kingdom-gold'
+                                                                >
+                                                                        {link.label}
+                                                                </Link>
+                                                        ))}
+                                                        <span className='text-kingdom-ivory/40'>|</span>
                                                         <Link
-                                                                to={'/'}
                                                                 className='transition-royal focus-outline hover:text-kingdom-gold'
+                                                                to={'/legacy-store'}
                                                         >
-                                                                {t("nav.home")}
+                                                                Legacy Store
                                                         </Link>
+                                                        {/* TODO: legacy e-commerce shortcuts can be toggled by role */}
                                                         {isAdmin && (
                                                                 <Link
                                                                         className='flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold hover:bg-kingdom-purple/70'
@@ -91,7 +76,6 @@ const Navbar = () => {
                                                 </nav>
 
                                                 <div className='flex items-center gap-3'>
-                                                        {cartLink}
                                                         {user ? (
                                                                 <button
                                                                         className='flex items-center gap-2 rounded-full border border-transparent bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold/40 hover:bg-kingdom-purple/70'

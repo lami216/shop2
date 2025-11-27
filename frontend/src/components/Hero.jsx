@@ -40,7 +40,7 @@ const Hero = () => {
                                                 إصدار ملكي محدود
                                         </div>
                                         <h1 className='mt-6 text-4xl font-semibold leading-[1.25] tracking-[0.16em] text-kingdom-ivory sm:text-5xl lg:text-6xl'>
-                                                مملكة العطور
+                                                ملتقى Moltaqa
                                         </h1>
                                         <div className='mt-4 h-1 w-32 rounded-full bg-gradient-to-r from-kingdom-gold via-[#7F6FFF] to-transparent shadow-[0_12px_30px_-20px_rgba(212,175,55,0.65)]' />
                                         <p className='mt-6 text-lg leading-relaxed text-kingdom-cream/90 sm:text-xl'>

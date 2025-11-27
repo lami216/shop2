@@ -1,6 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
+import SearchPage from "./pages/SearchPage";
+import StudentProfilePage from "./pages/StudentProfilePage";
+import TutorProfilePage from "./pages/TutorProfilePage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import LegacyHomePage from "./pages/LegacyHomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
@@ -27,6 +32,10 @@ function App() {
         const getCartItems = useCartStore((state) => state.getCartItems);
 
         useEffect(() => {
+                document.title = "ملتقى Moltaqa";
+        }, []);
+
+        useEffect(() => {
                 checkAuth();
         }, [checkAuth]);
 
@@ -48,6 +57,13 @@ function App() {
                         <div className='relative z-40 pt-20 lg:pt-24'>
                                 <Routes>
                                         <Route path='/' element={<HomePage />} />
+                                        <Route path='/search' element={<SearchPage />} />
+                                        <Route path='/student/profile' element={<StudentProfilePage />} />
+                                        <Route path='/tutor/profile' element={<TutorProfilePage />} />
+                                        <Route path='/admin' element={<AdminDashboardPage />} />
+
+                                        {/* TODO: legacy e-commerce entry point */}
+                                        <Route path='/legacy-store' element={<LegacyHomePage />} />
                                         <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />
                                         <Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' />} />
                                         <Route

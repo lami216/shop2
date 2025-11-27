@@ -13,6 +13,10 @@ import analyticsRoutes from "./routes/analytics.route.js";
 import categoryRoutes from "./routes/category.route.js";
 import publicConfigRoutes from "./routes/publicConfig.route.js";
 import orderRoutes from "./routes/order.route.js";
+import studentRoutes from "./routes/studentRoutes.js";
+import tutorRoutes from "./routes/tutorRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -38,6 +42,10 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/public-config", publicConfigRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/tutor", tutorRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use("/image", express.static(path.join(projectRoot, "image")));
 
