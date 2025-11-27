@@ -1,6 +1,7 @@
 import express from "express";
 
 import { protect } from "../middleware/auth.middleware.js";
+import { buildValidationError, isValidObjectId } from "../lib/validators.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 import StudyGroup from "../models/StudyGroup.js";
@@ -10,12 +11,20 @@ const router = express.Router();
 
 router.use(protect);
 
+router.use((req, res, next) => {
+        // Allow students and tutors to chat; admin can view when moderation tools are added.
+        if (!["student", "tutor", "admin"].includes(req.user?.role)) {
+                return res.status(403).json(buildValidationError("Access denied - messaging unavailable for this role"));
+        }
+        return next();
+});
+
 router.post("/private", async (req, res) => {
         try {
                 const { userId } = req.body || {};
 
-                if (!userId) {
-                        return res.status(400).json({ message: "Target user is required" });
+                if (!isValidObjectId(userId)) {
+                        return res.status(400).json(buildValidationError("Valid target user is required"));
                 }
 
                 if (userId === req.user._id.toString()) {
@@ -55,8 +64,8 @@ router.post("/group", async (req, res) => {
         try {
                 const { groupId } = req.body || {};
 
-                if (!groupId) {
-                        return res.status(400).json({ message: "Group id is required" });
+                if (!isValidObjectId(groupId)) {
+                        return res.status(400).json(buildValidationError("Valid group id is required"));
                 }
 
                 const group = await StudyGroup.findById(groupId).populate("members", "_id name role");
@@ -142,6 +151,10 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
         try {
+                if (!isValidObjectId(req.params.id)) {
+                        return res.status(400).json(buildValidationError("Invalid conversation id"));
+                }
+
                 const conversation = await Conversation.findById(req.params.id)
                         .populate("participants", "name role avatar")
                         .populate("groupId", "groupName");

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import { buildValidationError } from "../lib/validators.js";
 
 const ACCESS_TOKEN_SECRET =
         process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || "moltaqa-dev-secret";
@@ -43,25 +44,29 @@ export const protect = async (req, res, next) => {
         }
 };
 
-export const requireStudent = (req, res, next) => {
-        if (req.user?.role !== "student") {
-                return res.status(403).json({ message: "Access denied - Students only" });
+const enforceRole = (role) => (req, res, next) => {
+        if (!req.user?.role) {
+                return res.status(401).json(buildValidationError("Unauthorized - missing user context"));
+        }
+
+        if (req.user.role !== role) {
+                return res.status(403).json({ message: `Access denied - ${role}s only` });
         }
 
         next();
 };
 
-export const requireTutor = (req, res, next) => {
-        if (req.user?.role !== "tutor") {
-                return res.status(403).json({ message: "Access denied - Tutors only" });
+export const requireStudent = enforceRole("student");
+export const requireTutor = enforceRole("tutor");
+export const requireAdmin = enforceRole("admin");
+
+export const requireStudentOrTutor = (req, res, next) => {
+        if (!req.user?.role) {
+                return res.status(401).json(buildValidationError("Unauthorized - missing user context"));
         }
 
-        next();
-};
-
-export const requireAdmin = (req, res, next) => {
-        if (req.user?.role !== "admin") {
-                return res.status(403).json({ message: "Access denied - Admin only" });
+        if (!["student", "tutor"].includes(req.user.role)) {
+                return res.status(403).json({ message: "Access denied - Students or tutors only" });
         }
 
         next();

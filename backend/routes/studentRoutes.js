@@ -1,6 +1,7 @@
 import express from "express";
 
 import { protect, requireStudent } from "../middleware/auth.middleware.js";
+import { buildValidationError, isNonEmptyString, isValidObjectId } from "../lib/validators.js";
 import Ad from "../models/Ad.js";
 import StudentProfile from "../models/StudentProfile.js";
 
@@ -44,12 +45,13 @@ const pickProfileFields = (body) => {
 
 const upsertProfile = async (req, res) => {
         try {
-                if (req.user?.role !== "student") {
-                        return res.status(403).json({ message: "Access denied - Students only" });
-                }
-
                 const payload = pickProfileFields(req.body);
                 payload.userId = req.user._id;
+
+                // TODO: validate academic fields against catalogs and enforce allowed studyTimes values
+                if (payload.level && !isNonEmptyString(payload.level)) {
+                        return res.status(400).json(buildValidationError("Level must be provided when set"));
+                }
 
                 // TODO: validate subject ids and academic constraints once catalogs are finalized
 
@@ -137,6 +139,14 @@ router.post("/ads", async (req, res) => {
                         return res.status(400).json({ message: "Invalid ad type" });
                 }
 
+                if (!isValidObjectId(req.body?.subjectId)) {
+                        return res.status(400).json(buildValidationError("Valid subjectId is required"));
+                }
+
+                if (!isNonEmptyString(req.body?.description)) {
+                        return res.status(400).json(buildValidationError("Description is required"));
+                }
+
                 const adPayload = buildAdPayload(req.body);
 
                 const ad = await Ad.create({
@@ -166,10 +176,17 @@ router.get("/ads", async (req, res) => {
 
 router.get("/ads/:id", async (req, res) => {
         try {
+                if (!isValidObjectId(req.params.id)) {
+                        return res.status(400).json(buildValidationError("Invalid ad id"));
+                }
                 const ad = await Ad.findById(req.params.id);
 
-                if (!ad || ad.creator?.toString() !== req.user._id.toString()) {
+                if (!ad) {
                         return res.status(404).json({ message: "Ad not found" });
+                }
+
+                if (ad.creator?.toString() !== req.user._id.toString()) {
+                        return res.status(403).json({ message: "You do not have access to this ad" });
                 }
 
                 return res.json(ad);
@@ -181,10 +198,17 @@ router.get("/ads/:id", async (req, res) => {
 
 router.put("/ads/:id", async (req, res) => {
         try {
+                if (!isValidObjectId(req.params.id)) {
+                        return res.status(400).json(buildValidationError("Invalid ad id"));
+                }
                 const ad = await Ad.findById(req.params.id);
 
-                if (!ad || ad.creator?.toString() !== req.user._id.toString()) {
+                if (!ad) {
                         return res.status(404).json({ message: "Ad not found" });
+                }
+
+                if (ad.creator?.toString() !== req.user._id.toString()) {
+                        return res.status(403).json({ message: "You do not have access to this ad" });
                 }
 
                 const { adType } = req.body;
@@ -212,10 +236,17 @@ router.put("/ads/:id", async (req, res) => {
 
 router.delete("/ads/:id", async (req, res) => {
         try {
+                if (!isValidObjectId(req.params.id)) {
+                        return res.status(400).json(buildValidationError("Invalid ad id"));
+                }
                 const ad = await Ad.findById(req.params.id);
 
-                if (!ad || ad.creator?.toString() !== req.user._id.toString()) {
+                if (!ad) {
                         return res.status(404).json({ message: "Ad not found" });
+                }
+
+                if (ad.creator?.toString() !== req.user._id.toString()) {
+                        return res.status(403).json({ message: "You do not have access to this ad" });
                 }
 
                 await ad.deleteOne();

@@ -1,6 +1,7 @@
 import express from "express";
 
 import { protect, requireTutor } from "../middleware/auth.middleware.js";
+import { buildValidationError, ensurePositiveNumber, isValidObjectId } from "../lib/validators.js";
 import Payment from "../models/Payment.js";
 import TutorProfile from "../models/TutorProfile.js";
 
@@ -77,15 +78,27 @@ router.get("/profile", async (req, res) => {
 
 const upsertTutorProfile = async (req, res) => {
         try {
-                if (req.user?.role !== "tutor") {
-                        return res.status(403).json({ message: "Access denied - Tutors only" });
-                }
-
                 const payload = pickProfileFields(req.body);
                 payload.userId = req.user._id;
 
                 // TODO: validate majors/subjects/levels combos against catalogs once available
                 // TODO: ensure subjectPricing subjects belong to tutor specialties or subject list
+                const invalidSubjectPricing = Array.isArray(payload.subjectPricing)
+                        ? payload.subjectPricing.some(
+                                  (entry) =>
+                                          !isValidObjectId(entry.subject) ||
+                                          (entry.monthly !== undefined && entry.monthly !== null &&
+                                                  !ensurePositiveNumber(Number(entry.monthly))) ||
+                                          (entry.semester !== undefined && entry.semester !== null &&
+                                                  !ensurePositiveNumber(Number(entry.semester)))
+                          )
+                        : false;
+
+                if (invalidSubjectPricing) {
+                        return res
+                                .status(400)
+                                .json(buildValidationError("Subject pricing entries must include valid subject ids and amounts"));
+                }
 
                 let profile = await TutorProfile.findOne({ userId: req.user._id });
                 const isNew = !profile;

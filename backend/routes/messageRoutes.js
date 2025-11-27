@@ -1,6 +1,7 @@
 import express from "express";
 
 import { protect } from "../middleware/auth.middleware.js";
+import { buildValidationError, isNonEmptyString, isValidObjectId } from "../lib/validators.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 
@@ -12,8 +13,10 @@ router.post("/", async (req, res) => {
         try {
                 const { conversationId, content, meta } = req.body || {};
 
-                if (!conversationId || !content) {
-                        return res.status(400).json({ message: "Conversation and content are required" });
+                if (!isValidObjectId(conversationId) || !isNonEmptyString(content)) {
+                        return res
+                                .status(400)
+                                .json(buildValidationError("Conversation and non-empty content are required"));
                 }
 
                 const conversation = await Conversation.findById(conversationId);
@@ -55,6 +58,9 @@ router.post("/", async (req, res) => {
 router.get("/:conversationId", async (req, res) => {
         try {
                 const { conversationId } = req.params;
+                if (!isValidObjectId(conversationId)) {
+                        return res.status(400).json(buildValidationError("Invalid conversation id"));
+                }
                 const conversation = await Conversation.findById(conversationId);
 
                 if (!conversation) {

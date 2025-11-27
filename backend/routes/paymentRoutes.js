@@ -2,6 +2,12 @@ import express from "express";
 
 import { checkoutSuccess, createCheckoutSession } from "../controllers/payment.controller.js";
 import { protect, requireStudent, requireTutor } from "../middleware/auth.middleware.js";
+import {
+  buildValidationError,
+  ensurePositiveNumber,
+  isValidEnum,
+  isValidObjectId,
+} from "../lib/validators.js";
 import Payment from "../models/Payment.js";
 import StudentProfile from "../models/StudentProfile.js";
 import TutorProfile from "../models/TutorProfile.js";
@@ -61,8 +67,16 @@ router.post("/initiate", protect, requireTutor, async (req, res) => {
   try {
     const { studentId, subjectId, amount, period, notes } = req.body;
 
-    if (!studentId || !subjectId || !amount || !period) {
-      return res.status(400).json({ message: "Missing required payment data" });
+    if (!isValidObjectId(studentId) || !isValidObjectId(subjectId)) {
+      return res.status(400).json(buildValidationError("Valid student and subject ids are required"));
+    }
+
+    if (!ensurePositiveNumber(Number(amount))) {
+      return res.status(400).json(buildValidationError("Amount must be a positive number"));
+    }
+
+    if (!isValidEnum(period, ["monthly", "semester"])) {
+      return res.status(400).json(buildValidationError("Invalid payment period"));
     }
 
     const payment = await Payment.create({
@@ -76,6 +90,7 @@ router.post("/initiate", protect, requireTutor, async (req, res) => {
       status: "awaiting_receipt",
       isConfirmed: false,
       // TODO: validate tutor teaches subject and student has access to it
+      // TODO: add audit logging for initiation attempts
     });
 
     return res.status(201).json(payment);
@@ -108,6 +123,9 @@ router.get("/my", protect, async (req, res) => {
 
 router.get("/:id", protect, async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json(buildValidationError("Invalid payment id"));
+    }
     const payment = await Payment.findById(req.params.id);
 
     if (!payment) {
@@ -130,6 +148,9 @@ router.get("/:id", protect, async (req, res) => {
 
 router.put("/:id/receipt", protect, requireStudent, async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json(buildValidationError("Invalid payment id"));
+    }
     const payment = await Payment.findById(req.params.id);
 
     if (!payment) {
@@ -164,6 +185,9 @@ router.put("/:id/receipt", protect, requireStudent, async (req, res) => {
 
 router.put("/:id/confirm", protect, requireTutor, async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json(buildValidationError("Invalid payment id"));
+    }
     const payment = await Payment.findById(req.params.id);
 
     if (!payment) {
@@ -175,6 +199,12 @@ router.put("/:id/confirm", protect, requireTutor, async (req, res) => {
     }
 
     const { approved, message, rejectionReason } = req.body;
+
+    if (approved === undefined && !rejectionReason) {
+      return res
+        .status(400)
+        .json(buildValidationError("Approval decision or rejection reason is required"));
+    }
 
     if (approved) {
       payment.status = "confirmed";

@@ -1,6 +1,13 @@
 import express from "express";
 
 import { protect, requireAdmin } from "../middleware/auth.middleware.js";
+import {
+        buildValidationError,
+        isNonEmptyString,
+        isValidEnum,
+        isValidObjectId,
+        isValidRole,
+} from "../lib/validators.js";
 import User from "../models/user.model.js";
 import TutorProfile from "../models/TutorProfile.js";
 import Ad from "../models/Ad.js";
@@ -88,24 +95,29 @@ router.get("/overview", async (req, res) => {
 router.get("/users", async (req, res) => {
         try {
                         // TODO: paginate admin user listing once UI adds paging controls
-                const { role, search, limit = 50 } = req.query;
+                const { role, search } = req.query;
+                const limit = Math.min(Number(req.query.limit) || 50, 100);
                 const filter = {};
 
                 if (role) {
+                        if (!isValidRole(role)) {
+                                return res.status(400).json(buildValidationError("Invalid role filter"));
+                        }
                         filter.role = role;
                 }
 
-                if (search) {
+                if (search && isNonEmptyString(search)) {
+                        const safeTerm = search.trim().slice(0, 80);
                         filter.$or = [
-                                { name: { $regex: search, $options: "i" } },
-                                { email: { $regex: search, $options: "i" } },
+                                { name: { $regex: safeTerm, $options: "i" } },
+                                { email: { $regex: safeTerm, $options: "i" } },
                         ];
                 }
 
                 const users = await User.find(filter)
                         .select("name email role isActive createdAt")
                         .sort({ createdAt: -1 })
-                        .limit(Number(limit));
+                        .limit(limit);
 
                 res.json(users);
         } catch (error) {
@@ -119,6 +131,10 @@ router.patch("/users/:id", async (req, res) => {
                 const { id } = req.params;
                 const { isActive, role } = req.body;
                 const allowedRoles = ["student", "tutor", "admin"];
+
+                if (!isValidObjectId(id)) {
+                        return res.status(400).json(buildValidationError("Invalid user id"));
+                }
 
                 const user = await User.findById(id);
 
@@ -166,6 +182,8 @@ router.get("/tutors", async (req, res) => {
                 const { badge } = req.query;
                 const filter = {};
 
+                // TODO: restrict badge filter to known values exposed in admin UI dropdowns
+
                 if (badge) {
                         const badgeDoc = await Badge.findOne({ name: badge.toLowerCase() });
                         if (badgeDoc) {
@@ -201,6 +219,9 @@ router.get("/tutors", async (req, res) => {
 router.get("/tutors/:id", async (req, res) => {
         try {
                 const { id } = req.params;
+                if (!isValidObjectId(id)) {
+                        return res.status(400).json(buildValidationError("Invalid tutor id"));
+                }
                 const tutor = await TutorProfile.findById(id)
                         .populate({ path: "userId", select: "name email role" })
                         .populate({ path: "teacherBadge", select: "name color icon incomeMin incomeMax subscriptionRate" })
@@ -222,14 +243,23 @@ router.get("/tutors/:id", async (req, res) => {
 router.get("/ads", async (req, res) => {
         try {
                         // TODO: paginate ads list when admin UI grows
-                const { type, status, limit = 50 } = req.query;
+                const { type, status } = req.query;
+                const limit = Math.min(Number(req.query.limit) || 50, 100);
                 const filter = {};
 
+                const allowedTypes = ["partner", "group", "tutor", "help"];
                 if (type) {
+                        if (!allowedTypes.includes(type)) {
+                                return res.status(400).json(buildValidationError("Invalid ad type filter"));
+                        }
                         filter.adType = type;
                 }
 
+                const allowedStatuses = ["active", "archived", "blocked", "pending"];
                 if (status) {
+                        if (!allowedStatuses.includes(status)) {
+                                return res.status(400).json(buildValidationError("Invalid ad status filter"));
+                        }
                         filter.status = status;
                 }
 
@@ -237,7 +267,7 @@ router.get("/ads", async (req, res) => {
                         .populate({ path: "creator", select: "name role" })
                         .populate({ path: "subject", select: "subjectName" })
                         .sort({ createdAt: -1 })
-                        .limit(Number(limit));
+                        .limit(limit);
 
                 res.json(ads);
         } catch (error) {
@@ -251,6 +281,10 @@ router.patch("/ads/:id", async (req, res) => {
                 const { id } = req.params;
                 const { status } = req.body;
                 const allowedStatuses = ["active", "archived", "blocked", "pending"];
+
+                if (!isValidObjectId(id)) {
+                        return res.status(400).json(buildValidationError("Invalid ad id"));
+                }
 
                 if (status && !allowedStatuses.includes(status)) {
                         return res.status(400).json({ message: "Invalid status" });
@@ -278,19 +312,45 @@ router.patch("/ads/:id", async (req, res) => {
 router.get("/payments", async (req, res) => {
         try {
                         // TODO: paginate payments for long history
-                const { status, tutorId, studentId, limit = 50 } = req.query;
+                const { status, tutorId, studentId } = req.query;
+                const limit = Math.min(Number(req.query.limit) || 50, 100);
                 const filter = {};
 
-                if (status) filter.status = status;
-                if (tutorId) filter.tutor = tutorId;
-                if (studentId) filter.student = studentId;
+                const allowedStatuses = [
+                        "pending",
+                        "awaiting_receipt",
+                        "awaiting_tutor_confirmation",
+                        "confirmed",
+                        "rejected",
+                ];
+
+                if (status) {
+                        if (!allowedStatuses.includes(status)) {
+                                return res.status(400).json(buildValidationError("Invalid payment status filter"));
+                        }
+                        filter.status = status;
+                }
+
+                if (tutorId) {
+                        if (!isValidObjectId(tutorId)) {
+                                return res.status(400).json(buildValidationError("Invalid tutor id"));
+                        }
+                        filter.tutor = tutorId;
+                }
+
+                if (studentId) {
+                        if (!isValidObjectId(studentId)) {
+                                return res.status(400).json(buildValidationError("Invalid student id"));
+                        }
+                        filter.student = studentId;
+                }
 
                 const payments = await Payment.find(filter)
                         .populate({ path: "student", select: "name email" })
                         .populate({ path: "tutor", select: "name email" })
                         .populate({ path: "subject", select: "subjectName" })
                         .sort({ createdAt: -1 })
-                        .limit(Number(limit));
+                        .limit(limit);
 
                 res.json(payments);
         } catch (error) {
@@ -310,6 +370,10 @@ router.patch("/payments/:id", async (req, res) => {
                         "confirmed",
                         "rejected",
                 ];
+
+                if (!isValidObjectId(id)) {
+                        return res.status(400).json(buildValidationError("Invalid payment id"));
+                }
 
                 if (status && !allowedStatuses.includes(status)) {
                         return res.status(400).json({ message: "Invalid status" });
@@ -349,8 +413,8 @@ router.get("/colleges", async (_req, res) => {
 router.post("/colleges", async (req, res) => {
         try {
                 const { collegeName } = req.body;
-                if (!collegeName) {
-                        return res.status(400).json({ message: "College name is required" });
+                if (!isNonEmptyString(collegeName)) {
+                        return res.status(400).json(buildValidationError("College name is required"));
                 }
 
                 const college = await College.create({ collegeName });
@@ -375,8 +439,15 @@ router.post("/majors", async (req, res) => {
         try {
                 const { majorName, college } = req.body;
 
-                if (!majorName || !college) {
-                        return res.status(400).json({ message: "Major name and college are required" });
+                if (!isNonEmptyString(majorName) || !isValidObjectId(college)) {
+                        return res
+                                .status(400)
+                                .json(buildValidationError("Major name and valid college are required"));
+                }
+
+                const parentCollege = await College.findById(college);
+                if (!parentCollege) {
+                        return res.status(404).json({ message: "College not found" });
                 }
 
                 const major = await Major.create({ majorName, college });
@@ -403,8 +474,21 @@ router.post("/subjects", async (req, res) => {
         try {
                 const { subjectName, major, level } = req.body;
 
-                if (!subjectName || !major) {
-                        return res.status(400).json({ message: "Subject name and major are required" });
+                if (!isNonEmptyString(subjectName) || !isValidObjectId(major)) {
+                        return res
+                                .status(400)
+                                .json(buildValidationError("Subject name and valid major are required"));
+                }
+
+                const allowedLevels = ["L1", "L2", "L3", "Master"];
+                // TODO: align allowedLevels list with frontend dropdowns
+                if (level && !isValidEnum(level, allowedLevels)) {
+                        return res.status(400).json(buildValidationError("Invalid level"));
+                }
+
+                const parentMajor = await Major.findById(major);
+                if (!parentMajor) {
+                        return res.status(404).json({ message: "Major not found" });
                 }
 
                 const subject = await Subject.create({ subjectName, major, level });
@@ -430,10 +514,31 @@ router.patch("/badges/:id", async (req, res) => {
                 const { id } = req.params;
                 const { incomeMin, incomeMax, subscriptionRate } = req.body;
 
+                if (!isValidObjectId(id)) {
+                        return res.status(400).json(buildValidationError("Invalid badge id"));
+                }
+
                 const updates = {};
-                if (incomeMin !== undefined) updates.incomeMin = incomeMin;
-                if (incomeMax !== undefined) updates.incomeMax = incomeMax;
-                if (subscriptionRate !== undefined) updates.subscriptionRate = subscriptionRate;
+                if (incomeMin !== undefined) {
+                        if (Number.isNaN(Number(incomeMin))) {
+                                return res.status(400).json(buildValidationError("incomeMin must be numeric"));
+                        }
+                        updates.incomeMin = Number(incomeMin);
+                }
+                if (incomeMax !== undefined) {
+                        if (Number.isNaN(Number(incomeMax))) {
+                                return res.status(400).json(buildValidationError("incomeMax must be numeric"));
+                        }
+                        updates.incomeMax = Number(incomeMax);
+                }
+                if (subscriptionRate !== undefined) {
+                        if (Number.isNaN(Number(subscriptionRate))) {
+                                return res
+                                        .status(400)
+                                        .json(buildValidationError("subscriptionRate must be numeric"));
+                        }
+                        updates.subscriptionRate = Number(subscriptionRate);
+                }
                 // TODO: recalculate tutor badges when ranges change
 
                 const badge = await Badge.findByIdAndUpdate(id, { $set: updates }, { new: true });
