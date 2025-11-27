@@ -1,6 +1,7 @@
 import express from "express";
 
-import { protect } from "../middleware/auth.middleware.js";
+import { protect, requireStudentOrTutor } from "../middleware/auth.middleware.js";
+import { buildValidationError, isValidEnum, isValidObjectId } from "../lib/validators.js";
 import StudentProfile from "../models/StudentProfile.js";
 import User from "../models/User.js";
 import {
@@ -17,16 +18,16 @@ router.get("/", (req, res) => {
   res.send("OK");
 });
 
-router.post("/match", protect, async (req, res) => {
+router.post("/match", protect, requireStudentOrTutor, async (req, res) => {
   try {
     const { subjectId, searchType, mode } = req.body || {};
 
-    if (!subjectId) {
-      return res.status(400).json({ message: "subjectId is required" });
+    if (!isValidObjectId(subjectId)) {
+      return res.status(400).json(buildValidationError("Valid subjectId is required"));
     }
 
-    if (!searchType || !["partner", "group", "tutor", "help"].includes(searchType)) {
-      return res.status(400).json({ message: "Invalid searchType" });
+    if (!searchType || !isValidEnum(searchType, ["partner", "group", "tutor", "help"])) {
+      return res.status(400).json(buildValidationError("Invalid searchType"));
     }
 
     const subject = await findSubjectById(subjectId);

@@ -26,9 +26,11 @@ const Navbar = () => {
                 { to: "/student/profile", label: t("nav.studentProfile") },
                 { to: "/tutor/profile", label: t("nav.tutorProfile") },
                 { to: "/chat", label: t("nav.messages") },
-                // TODO: hide admin link for non-admin users once role-aware menus are refined
+                // Admin link is only visible when the user role allows it; backend still enforces requireAdmin
                 ...(isAdmin ? [{ to: "/admin", label: t("nav.adminDashboard") }] : []),
         ];
+
+        const legacyLinks = [{ to: "/legacy-store", label: "Legacy Store" }];
 
         return (
                 <header className='fixed top-0 right-0 z-50 w-full border-b border-kingdom-gold/10 bg-gradient-to-br from-kingdom-purple/95 to-kingdom-plum/95 text-kingdom-ivory shadow-royal-soft backdrop-blur-xl'>
@@ -61,11 +63,19 @@ const Navbar = () => {
                                                                         {link.label}
                                                                 </Link>
                                                         ))}
-                                                        <span className='text-kingdom-ivory/40'>|</span>
-                                                        <Link className='transition-royal focus-outline hover:text-kingdom-gold' to={'/legacy-store'}>
-                                                                Legacy Store
-                                                        </Link>
-                                                        {/* TODO: legacy e-commerce shortcuts can be toggled by role */}
+                                                        <div className='flex items-center gap-2 rounded-full border border-kingdom-ivory/10 px-3 py-1 text-xs text-kingdom-ivory/70'>
+                                                                <span className='uppercase tracking-wide text-kingdom-ivory/50'>Legacy</span>
+                                                                {legacyLinks.map((link) => (
+                                                                        <Link
+                                                                                key={link.to}
+                                                                                className='underline-offset-4 transition-royal hover:text-kingdom-gold'
+                                                                                to={link.to}
+                                                                        >
+                                                                                {link.label}
+                                                                        </Link>
+                                                                ))}
+                                                                {/* TODO: hide legacy entry points once store deprecation is finished */}
+                                                        </div>
                                                         {isAdmin && (
                                                                 <Link
                                                                         className='flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold hover:bg-kingdom-purple/70'
