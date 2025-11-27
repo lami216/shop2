@@ -56,6 +56,15 @@ const tutorProfileSchema = new mongoose.Schema(
     },
     // TODO: compute incomes from confirmed payments instead of manual values
     // TODO: integrate payment disbursement tracking and payout schedules
+    activeLessons: [
+      {
+        student: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },
+        period: { type: String, trim: true },
+        payment: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
+        // TODO: add meeting cadence and lesson status
+      },
+    ],
   },
   {
     timestamps: true,

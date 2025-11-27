@@ -39,6 +39,15 @@ const studentProfileSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    activeLessons: [
+      {
+        subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },
+        tutor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        period: { type: String, trim: true },
+        payment: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
+        // TODO: extend with schedule windows and lesson status tracking
+      },
+    ],
     // TODO: add ad posting preferences, matching flags, and collaboration history
   },
   {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 import { apiClient } from "../lib/apiClient";
+import { getMyPayments, uploadReceipt } from "../services/paymentService";
 
 const emptyProfileState = {
         college: "",
@@ -823,6 +824,120 @@ const StudentAdsPanel = () => {
         );
 };
 
+const StudentPaymentsPanel = () => {
+        const [payments, setPayments] = useState([]);
+        const [loading, setLoading] = useState(false);
+        const [submittingId, setSubmittingId] = useState(null);
+        const [receiptInputs, setReceiptInputs] = useState({});
+
+        const fetchPayments = async () => {
+                setLoading(true);
+                try {
+                        const data = await getMyPayments();
+                        setPayments(data || []);
+                } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data?.message || "Could not load payments");
+                } finally {
+                        setLoading(false);
+                }
+        };
+
+        useEffect(() => {
+                fetchPayments();
+        }, []);
+
+        const handleReceiptSubmit = async (paymentId) => {
+                const receiptImage = receiptInputs[paymentId];
+
+                if (!receiptImage) {
+                        toast.error("أدخل مرجع الإيصال أولًا");
+                        return;
+                }
+
+                setSubmittingId(paymentId);
+                try {
+                        await uploadReceipt(paymentId, { receiptImage });
+                        toast.success("تم إرسال الإيصال للمعلم");
+                        fetchPayments();
+                } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data?.message || "تعذر إرسال الإيصال");
+                } finally {
+                        setSubmittingId(null);
+                }
+        };
+
+        return (
+                <div className='rounded-2xl border border-kingdom-gold/20 bg-black/40 p-6 shadow-royal-soft'>
+                        <div className='flex items-center justify-between gap-3'>
+                                <div>
+                                        <h2 className='text-2xl font-semibold text-kingdom-gold'>دفعاتي</h2>
+                                        <p className='text-kingdom-cream/70'>سجل مبسط للدفعات التي تتابعها مع المعلم.</p>
+                                </div>
+                        </div>
+
+                        {loading ? (
+                                <p className='mt-4 text-sm text-kingdom-cream/70'>جاري تحميل الدفعات...</p>
+                        ) : payments.length === 0 ? (
+                                <p className='mt-4 text-sm text-kingdom-cream/70'>لا توجد دفعات حالية.</p>
+                        ) : (
+                                <div className='mt-4 space-y-3'>
+                                        {payments.map((payment) => (
+                                                <div
+                                                        key={payment._id}
+                                                        className='rounded-xl border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-4'
+                                                >
+                                                        <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+                                                                <div className='space-y-1'>
+                                                                        <p className='text-sm text-kingdom-cream/80'>
+                                                                                المادة: {payment.subject?.name || payment.subject || "-"}
+                                                                        </p>
+                                                                        <p className='text-sm text-kingdom-cream/80'>الدفع: {payment.amount} / {payment.period}</p>
+                                                                        <p className='text-xs text-kingdom-cream/60'>الحالة: {payment.status}</p>
+                                                                        {payment.receiptImage && (
+                                                                                <p className='text-xs text-kingdom-cream/60'>مرجع الإيصال: {payment.receiptImage}</p>
+                                                                        )}
+                                                                </div>
+
+                                                                {payment.status === "awaiting_receipt" && (
+                                                                        <div className='flex w-full flex-col gap-2 sm:w-72'>
+                                                                                <input
+                                                                                        className='rounded-lg border border-kingdom-gold/30 bg-black/40 p-2 text-sm text-white'
+                                                                                        placeholder='رابط أو اسم ملف الإيصال'
+                                                                                        value={receiptInputs[payment._id] || ""}
+                                                                                        onChange={(e) =>
+                                                                                                setReceiptInputs({
+                                                                                                        ...receiptInputs,
+                                                                                                        [payment._id]: e.target.value,
+                                                                                                })
+                                                                                        }
+                                                                                />
+                                                                                <button
+                                                                                        onClick={() => handleReceiptSubmit(payment._id)}
+                                                                                        disabled={submittingId === payment._id}
+                                                                                        className='rounded-lg bg-kingdom-gold px-3 py-2 text-sm font-semibold text-kingdom-charcoal disabled:opacity-60'
+                                                                                >
+                                                                                        {submittingId === payment._id ? "يتم الإرسال..." : "إرسال الإيصال"}
+                                                                                </button>
+                                                                                <p className='text-[11px] text-kingdom-cream/60'>TODO: ربط الرفع مع نظام تخزين ملفات فعلي.</p>
+                                                                        </div>
+                                                                )}
+
+                                                                {payment.status !== "awaiting_receipt" && (
+                                                                        <div className='text-right text-xs text-kingdom-cream/60'>
+                                                                                آخر تحديث: {new Date(payment.updatedAt).toLocaleString()}
+                                                                        </div>
+                                                                )}
+                                                        </div>
+                                                </div>
+                                        ))}
+                                </div>
+                        )}
+                </div>
+        );
+};
+
 const StudentProfilePage = () => {
         const [profile, setProfile] = useState(null);
         const [formState, setFormState] = useState(emptyProfileState);
@@ -1014,6 +1129,7 @@ const StudentProfilePage = () => {
                                 </div>
 
                                 <StudentAdsPanel />
+                                <StudentPaymentsPanel />
                         </div>
                 </div>
         );
