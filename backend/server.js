@@ -17,6 +17,8 @@ import studentRoutes from "./routes/studentRoutes.js";
 import tutorRoutes from "./routes/tutorRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import conversationRoutes from "./routes/conversationRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 
 import { connectDB } from "./lib/db.js";
 import "./models/index.js";
@@ -48,6 +50,8 @@ app.use("/api/student", studentRoutes);
 app.use("/api/tutor", tutorRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/messages", messageRoutes);
 
 // TODO: add middlewares for relational validation and Moltaqa matching flows
 
