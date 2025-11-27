@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+
+import ErrorBox from "../../components/ui/ErrorBox";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { fetchAdminTutorDetail, fetchAdminTutors } from "../../services/adminService";
 
 const AdminTutorsPage = () => {
@@ -31,8 +34,8 @@ const AdminTutorsPage = () => {
                 loadTutors();
         }, []);
 
-        if (loading) return <p>Loading admin data...</p>;
-        if (error) return <p className='text-red-400'>{error}</p>;
+        if (loading) return <LoadingSpinner label='Loading tutors...' />;
+        if (error) return <ErrorBox message={error} onRetry={loadTutors} />;
 
         return (
                 <div className='grid gap-4 lg:grid-cols-3'>

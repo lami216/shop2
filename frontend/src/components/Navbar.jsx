@@ -1,5 +1,5 @@
 import { UserPlus, LogIn, LogOut, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import useTranslation from "../hooks/useTranslation";
 import { useUserStore } from "../stores/useUserStore";
 import LogoMoltaqa from "./LogoMoltaqa";
@@ -55,13 +55,19 @@ const Navbar = () => {
                                         <div className='flex flex-col items-center gap-3 text-sm font-medium sm:flex-row sm:justify-end sm:gap-4'>
                                                 <nav className='flex flex-wrap items-center gap-3 text-kingdom-ivory/80'>
                                                         {mainLinks.map((link) => (
-                                                                <Link
+                                                                <NavLink
                                                                         key={link.to}
                                                                         to={link.to}
-                                                                        className='transition-royal focus-outline hover:text-kingdom-gold'
+                                                                        className={({ isActive }) =>
+                                                                                `transition-royal focus-outline hover:text-kingdom-gold ${
+                                                                                        isActive
+                                                                                                ? "border-b-2 border-kingdom-gold pb-1 text-kingdom-gold"
+                                                                                                : ""
+                                                                                }`
+                                                                        }
                                                                 >
                                                                         {link.label}
-                                                                </Link>
+                                                                </NavLink>
                                                         ))}
                                                         <div className='flex items-center gap-2 rounded-full border border-kingdom-ivory/10 px-3 py-1 text-xs text-kingdom-ivory/70'>
                                                                 <span className='uppercase tracking-wide text-kingdom-ivory/50'>Legacy</span>

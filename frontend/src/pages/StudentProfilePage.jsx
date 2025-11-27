@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 import { apiClient } from "../lib/apiClient";
 import { getMyPayments, uploadReceipt } from "../services/paymentService";
 import useTranslation from "../hooks/useTranslation";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import ErrorBox from "../components/ui/ErrorBox";
+import { useUserStore } from "../stores/useUserStore";
 
 const emptyProfileState = {
         college: "",
@@ -20,6 +24,7 @@ const StudentAdsPanel = () => {
         const [loading, setLoading] = useState(true);
         const [creating, setCreating] = useState(false);
         const [editingAd, setEditingAd] = useState(null);
+        const [error, setError] = useState("");
         const [partnerForm, setPartnerForm] = useState({ subjectId: "", modes: { reviewTogether: false, explainMe: false, IExplain: false }, description: "" });
         const [groupForm, setGroupForm] = useState({ subjectsText: "", maxMembers: "", mode: "online", joinExisting: false, description: "" });
         const [tutorForm, setTutorForm] = useState({ subjectId: "", period: "monthly", mode: "online", description: "" });
@@ -28,12 +33,13 @@ const StudentAdsPanel = () => {
 
         const fetchAds = async () => {
                 setLoading(true);
+                setError("");
                 try {
                         const data = await apiClient.get("/student/ads");
                         setAds(data || []);
                 } catch (error) {
                         console.error(error);
-                        toast.error("Failed to load ads");
+                        setError(error.response?.data?.message || "Failed to load ads");
                 } finally {
                         setLoading(false);
                 }
@@ -508,12 +514,13 @@ const StudentAdsPanel = () => {
                                                         fetchAds();
                                                         toast.success("Refreshed");
                                                 }}
-                                        >
-                                                Refresh
-                                        </button>
+                                                >
+                                                        Refresh
+                                                </button>
                                 </div>
+                                {error && <ErrorBox message={error} onRetry={fetchAds} />}
                                 {loading ? (
-                                        <p className='mt-3 text-kingdom-cream/70'>Loading ads...</p>
+                                        <LoadingSpinner label='Loading ads...' />
                                 ) : ads.length === 0 ? (
                                         <p className='mt-3 text-kingdom-cream/70'>No ads yet. Create your first one below.</p>
                                 ) : (
@@ -830,15 +837,17 @@ const StudentPaymentsPanel = () => {
         const [loading, setLoading] = useState(false);
         const [submittingId, setSubmittingId] = useState(null);
         const [receiptInputs, setReceiptInputs] = useState({});
+        const [error, setError] = useState("");
 
         const fetchPayments = async () => {
                 setLoading(true);
+                setError("");
                 try {
                         const data = await getMyPayments();
                         setPayments(data || []);
                 } catch (error) {
                         console.error(error);
-                        toast.error(error.response?.data?.message || "Could not load payments");
+                        setError(error.response?.data?.message || "Could not load payments");
                 } finally {
                         setLoading(false);
                 }
@@ -878,8 +887,9 @@ const StudentPaymentsPanel = () => {
                                 </div>
                         </div>
 
+                        {error && <ErrorBox message={error} onRetry={fetchPayments} />}
                         {loading ? (
-                                <p className='mt-4 text-sm text-kingdom-cream/70'>جاري تحميل الدفعات...</p>
+                                <LoadingSpinner label='جاري تحميل الدفعات...' />
                         ) : payments.length === 0 ? (
                                 <p className='mt-4 text-sm text-kingdom-cream/70'>لا توجد دفعات حالية.</p>
                         ) : (
@@ -941,10 +951,12 @@ const StudentPaymentsPanel = () => {
 
 const StudentProfilePage = () => {
         const { t, i18n } = useTranslation();
+        const user = useUserStore((state) => state.user);
         const [profile, setProfile] = useState(null);
         const [formState, setFormState] = useState(emptyProfileState);
         const [loading, setLoading] = useState(true);
         const [saving, setSaving] = useState(false);
+        const [error, setError] = useState("");
 
         const statusOptions = useMemo(
                 () => [
@@ -959,6 +971,7 @@ const StudentProfilePage = () => {
 
         const fetchProfile = async () => {
                 setLoading(true);
+                setError("");
                 try {
                         const data = await apiClient.get("/student/profile");
                         setProfile(data);
@@ -977,7 +990,7 @@ const StudentProfilePage = () => {
                         }
                 } catch (error) {
                         console.error(error);
-                        toast.error("Failed to load profile");
+                        setError(error.response?.data?.message || "Failed to load profile");
                 } finally {
                         setLoading(false);
                 }
@@ -1024,6 +1037,24 @@ const StudentProfilePage = () => {
                 }
         };
 
+        if (!user) {
+                return (
+                        <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
+                                <div className='mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 pb-24 pt-24 text-center sm:px-6'>
+                                        <h1 className='text-4xl font-bold text-kingdom-gold'>{t("page.studentProfile.heading")}</h1>
+                                        <p className='text-kingdom-cream/70'>Please log in to use this feature.</p>
+                                        <Link
+                                                to='/login'
+                                                className='rounded-full bg-kingdom-gold px-4 py-2 font-semibold text-kingdom-charcoal transition hover:bg-amber-300'
+                                        >
+                                                {t("nav.login")}
+                                        </Link>
+                                        {/* TODO: replace with proper ProtectedRoute */}
+                                </div>
+                        </div>
+                );
+        }
+
         return (
                 <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
                         <div className='relative z-10 mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-24 pt-24 sm:px-6 lg:px-8'>
@@ -1039,9 +1070,16 @@ const StudentProfilePage = () => {
                                         </div>
 
                                         {loading ? (
-                                                <p className='mt-4 text-kingdom-cream/70'>{t("common.loading")}</p>
+                                                <LoadingSpinner label={t("common.loading")} />
+                                        ) : error ? (
+                                                <ErrorBox message={error} onRetry={fetchProfile} />
                                         ) : (
                                                 <form className='mt-4 grid gap-4 sm:grid-cols-2' onSubmit={handleSubmit}>
+                                                        {!profile && (
+                                                                <p className='sm:col-span-2 rounded-xl border border-dashed border-kingdom-gold/30 bg-kingdom-plum/20 p-3 text-sm text-kingdom-cream/70'>
+                                                                        No profile found, please complete your information.
+                                                                </p>
+                                                        )}
                                                         <label className='flex flex-col gap-1 text-sm'>
                                                                 <span>{t("student.college") || "College"}</span>
                                                                 <input

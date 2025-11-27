@@ -3,7 +3,7 @@ import { Minus, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useProductStore } from "../stores/useProductStore";
 import { useCartStore } from "../stores/useCartStore";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { formatMRU } from "../lib/formatMRU";
 import PeopleAlsoBought from "../components/PeopleAlsoBought";
 import useTranslation from "../hooks/useTranslation";

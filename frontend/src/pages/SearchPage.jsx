@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import GroupCard from "../components/GroupCard";
-import HelpCard from "../components/HelpCard";
-import PartnerCard from "../components/PartnerCard";
-import TutorCard from "../components/TutorCard";
+
+import GroupCard from "../components/cards/GroupCard";
+import HelpCard from "../components/cards/HelpCard";
+import PartnerCard from "../components/cards/PartnerCard";
+import TutorCard from "../components/cards/TutorCard";
+import ErrorBox from "../components/ui/ErrorBox";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import useTranslation from "../hooks/useTranslation";
+import { useUserStore } from "../stores/useUserStore";
 
 const defaultFilters = {
         studyMode: "both",
@@ -23,6 +27,8 @@ const SearchPage = () => {
         const [error, setError] = useState("");
         const [filtersOpen, setFiltersOpen] = useState(false);
         const [filters, setFilters] = useState(defaultFilters);
+        const [requestVersion, setRequestVersion] = useState(0);
+        const user = useUserStore((state) => state.user);
 
         const tabs = useMemo(
                 () => [
@@ -87,7 +93,7 @@ const SearchPage = () => {
                 };
 
                 fetchMatches();
-        }, [searchType, selectedSubject]);
+        }, [searchType, selectedSubject, requestVersion]);
 
         const displayedResults = useMemo(() => {
                 let filtered = [...results];
@@ -123,6 +129,8 @@ const SearchPage = () => {
                 setResults([]);
         };
 
+        const handleRetry = () => setRequestVersion((prev) => prev + 1);
+
         const toggleFilters = () => setFiltersOpen((prev) => !prev);
 
         const renderCard = (item, index) => {
@@ -131,6 +139,24 @@ const SearchPage = () => {
                 if (searchType === "tutors") return <TutorCard key={index} tutor={item} />;
                 return <HelpCard key={index} profile={item} />;
         };
+
+        if (!user) {
+                return (
+                        <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
+                                <div className='mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 pb-24 pt-24 text-center sm:px-6'>
+                                        <h1 className='text-3xl font-bold text-kingdom-gold'>{t("page.search.heading")}</h1>
+                                        <p className='text-kingdom-ivory/70'>Please log in to use this feature.</p>
+                                        <Link
+                                                to='/login'
+                                                className='rounded-full bg-kingdom-gold px-4 py-2 font-semibold text-kingdom-charcoal transition hover:bg-amber-300'
+                                        >
+                                                {t("nav.login")}
+                                        </Link>
+                                        {/* TODO: replace with proper ProtectedRoute guard */}
+                                </div>
+                        </div>
+                );
+        }
 
         return (
                 <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
@@ -150,7 +176,8 @@ const SearchPage = () => {
                                                                 <select
                                                                         value={selectedSubject}
                                                                         onChange={(e) => setSelectedSubject(e.target.value)}
-                                                                        className='w-full rounded-xl border border-kingdom-gold/30 bg-[#0f0716] px-3 py-2 text-kingdom-ivory outline-none ring-kingdom-gold/40 focus:ring'
+                                                                        disabled={loading}
+                                                                        className='w-full rounded-xl border border-kingdom-gold/30 bg-[#0f0716] px-3 py-2 text-kingdom-ivory outline-none ring-kingdom-gold/40 focus:ring disabled:opacity-50'
                                                                 >
                                                                         <option value=''>{t("search.chooseSubject")}</option>
                                                                         {subjects.map((subject) => (
@@ -170,7 +197,8 @@ const SearchPage = () => {
                                                                 <button
                                                                         key={tab.key}
                                                                         onClick={() => handleTabChange(tab.key)}
-                                                                        className={`min-w-[120px] whitespace-nowrap rounded-lg px-4 py-2 font-semibold transition-all focus:outline-none focus-visible:ring focus-visible:ring-kingdom-gold/50 ${
+                                                                        disabled={loading}
+                                                                        className={`min-w-[120px] whitespace-nowrap rounded-lg px-4 py-2 font-semibold transition-all focus:outline-none focus-visible:ring focus-visible:ring-kingdom-gold/50 disabled:opacity-60 ${
                                                                                 searchType === tab.key
                                                                                         ? "bg-kingdom-gold text-kingdom-charcoal shadow-royal-soft"
                                                                                         : "bg-transparent text-kingdom-ivory/80 hover:bg-kingdom-purple/60"
@@ -209,10 +237,10 @@ const SearchPage = () => {
                                                 )}
                                         </div>
 
-                                        {error && <p className='text-sm text-red-400'>{error}</p>}
-                                        {loading && <p className='text-sm text-kingdom-gold'>{t("common.loading")}</p>}
+                                        {error && <ErrorBox message={error} onRetry={handleRetry} />}
+                                        {loading && <LoadingSpinner label={t("common.loading")} />}
                                         {!loading && selectedSubject && searchType && displayedResults.length === 0 && !error && (
-                                                <p className='text-sm text-kingdom-ivory/60'>{t("search.emptyState")}</p>
+                                                <p className='text-sm text-kingdom-ivory/60'>{t("search.emptyState") || "No matching results for this subject"}</p>
                                         )}
 
                                         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>

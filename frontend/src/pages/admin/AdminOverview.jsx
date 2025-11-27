@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import ErrorBox from "../../components/ui/ErrorBox";
 import { fetchAdminOverview } from "../../services/adminService";
 
 const StatCard = ({ title, value }) => (
@@ -28,8 +31,8 @@ const AdminOverview = () => {
                 loadOverview();
         }, []);
 
-        if (loading) return <p>Loading admin data...</p>;
-        if (error) return <p className='text-red-400'>{error}</p>;
+        if (loading) return <LoadingSpinner label='Loading admin data...' />;
+        if (error) return <ErrorBox message={error} onRetry={() => window.location.reload()} />;
         if (!overview) return <p>No overview available</p>;
 
         const { users = {}, ads = [], payments = {}, tutorsByBadge = [] } = overview;
