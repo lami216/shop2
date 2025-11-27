@@ -25,12 +25,20 @@ const tutorProfileSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    subjectPricing: [
+      {
+        subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },
+        monthly: Number,
+        semester: Number,
+      },
+    ],
     pricingMonthly: {
       type: Number,
     },
     pricingSemester: {
       type: Number,
     },
+    // TODO: prefer subjectPricing once catalogs are wired; keep these as general fallbacks for now
     bankNumber: {
       type: String,
       trim: true,
@@ -46,6 +54,7 @@ const tutorProfileSchema = new mongoose.Schema(
     incomeTotal: {
       type: Number,
     },
+    // TODO: compute incomes from confirmed payments instead of manual values
     // TODO: integrate payment disbursement tracking and payout schedules
   },
   {
