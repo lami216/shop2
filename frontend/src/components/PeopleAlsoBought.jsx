@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import useTranslation from "../hooks/useTranslation";
 import ProductCard from "./ProductCard";
 import toast from "react-hot-toast";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "./ui/LoadingSpinner";
 import apiClient from "../lib/apiClient";
 
 const PeopleAlsoBought = ({ productId, category }) => {

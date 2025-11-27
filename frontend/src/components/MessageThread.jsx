@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
 import { fetchMessages, sendMessage } from "../services/messagingService";
+import ErrorBox from "./ui/ErrorBox";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
 const MessageThread = ({ conversationId, conversation, currentUserId }) => {
         const [messages, setMessages] = useState([]);
         const [loading, setLoading] = useState(false);
+        const [messageError, setMessageError] = useState("");
         const [messageContent, setMessageContent] = useState("");
         const scrollRef = useRef(null);
 
@@ -16,6 +19,7 @@ const MessageThread = ({ conversationId, conversation, currentUserId }) => {
                                 return;
                         }
                         setLoading(true);
+                        setMessageError("");
                         try {
                                 const data = await fetchMessages(conversationId);
                                 setMessages(Array.isArray(data) ? data : []);
@@ -24,7 +28,7 @@ const MessageThread = ({ conversationId, conversation, currentUserId }) => {
                                 }, 50);
                         } catch (error) {
                                 console.error("Failed to load messages", error);
-                                toast.error(error.response?.data?.message || "Unable to load messages");
+                                setMessageError(error.response?.data?.message || "Unable to load messages");
                         } finally {
                                 setLoading(false);
                         }
@@ -49,6 +53,7 @@ const MessageThread = ({ conversationId, conversation, currentUserId }) => {
                 } catch (error) {
                         console.error("Failed to send message", error);
                         toast.error(error.response?.data?.message || "Unable to send message");
+                        // TODO: route to notification system instead of toast
                 }
         };
 
@@ -88,8 +93,9 @@ const MessageThread = ({ conversationId, conversation, currentUserId }) => {
                         </div>
 
                         <div className='flex-1 space-y-3 overflow-y-auto rounded-xl bg-kingdom-purple/10 p-3'>
-                                {loading && <p className='text-sm text-kingdom-ivory/70'>Loading messages...</p>}
-                                {!loading && messages.length === 0 && (
+                                {loading && <LoadingSpinner label='Loading messages...' />}
+                                {messageError && !loading && <ErrorBox message={messageError} onRetry={() => setMessageError("")} />}
+                                {!loading && messages.length === 0 && !messageError && (
                                         <p className='text-sm text-kingdom-ivory/70'>No messages yet.</p>
                                 )}
                                 {messages.map((message) => {

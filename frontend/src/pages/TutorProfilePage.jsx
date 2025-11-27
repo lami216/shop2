@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 import { apiClient } from "../lib/apiClient";
@@ -6,6 +7,8 @@ import { useUserStore } from "../stores/useUserStore";
 import { confirmPayment, getMyPayments, initiatePayment } from "../services/paymentService";
 import TutorBadge from "../components/TutorBadge";
 import useTranslation from "../hooks/useTranslation";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import ErrorBox from "../components/ui/ErrorBox";
 
 const LEVEL_OPTIONS = [
         { value: "L1", label: "Level 1" },
@@ -225,6 +228,7 @@ const TutorProfilePage = () => {
         const [loading, setLoading] = useState(true);
         const [saving, setSaving] = useState(false);
         const [formState, setFormState] = useState(emptyProfileState);
+        const [error, setError] = useState("");
 
         const badgeName = useMemo(
                 () => (profile?.teacherBadge?.name || profile?.teacherBadge?.label || "").toLowerCase(),
@@ -243,6 +247,7 @@ const TutorProfilePage = () => {
 
         const fetchProfile = async () => {
                 setLoading(true);
+                setError("");
                 try {
                         const data = await apiClient.get("/tutor/profile");
                         setProfile(data);
@@ -272,7 +277,7 @@ const TutorProfilePage = () => {
                         }
                 } catch (error) {
                         console.error(error);
-                        toast.error(error.response?.data?.message || "Failed to load tutor profile");
+                        setError(error.response?.data?.message || "Failed to load tutor profile");
                 } finally {
                         setLoading(false);
                 }
@@ -358,6 +363,44 @@ const TutorProfilePage = () => {
                         setSaving(false);
                 }
         };
+
+        if (!user) {
+                return (
+                        <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
+                                <div className='mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 pb-24 pt-24 text-center sm:px-6'>
+                                        <h1 className='text-4xl font-bold text-kingdom-gold'>{t("page.tutorProfile.heading")}</h1>
+                                        <p className='text-kingdom-cream/70'>Please log in to use this feature.</p>
+                                        <Link
+                                                to='/login'
+                                                className='rounded-full bg-kingdom-gold px-4 py-2 font-semibold text-kingdom-charcoal transition hover:bg-amber-300'
+                                        >
+                                                {t("nav.login")}
+                                        </Link>
+                                        {/* TODO: replace with proper ProtectedRoute */}
+                                </div>
+                        </div>
+                );
+        }
+
+        if (loading) {
+                return (
+                        <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
+                                <div className='mx-auto max-w-4xl px-4 pb-24 pt-24 sm:px-6'>
+                                        <LoadingSpinner label={t("common.loading")} />
+                                </div>
+                        </div>
+                );
+        }
+
+        if (error) {
+                return (
+                        <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
+                                <div className='mx-auto max-w-4xl px-4 pb-24 pt-24 sm:px-6'>
+                                        <ErrorBox message={error} onRetry={fetchProfile} />
+                                </div>
+                        </div>
+                );
+        }
 
         return (
                 <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
@@ -596,8 +639,6 @@ const TutorProfilePage = () => {
                                 </div>
 
                                 <TutorPaymentsPanel onRefreshProfile={fetchProfile} />
-
-                                {loading && <p className='text-sm text-kingdom-cream/70'>جاري تحميل الملف...</p>}
                         </div>
                 </div>
         );

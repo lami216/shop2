@@ -1,14 +1,4 @@
-const ScoreBadge = ({ score }) => (
-        <div className='flex items-center gap-2 rounded-full bg-kingdom-plum/30 px-3 py-1 text-sm font-semibold text-kingdom-gold'>
-                <span className='h-2 w-14 overflow-hidden rounded-full bg-kingdom-cream/10'>
-                        <span
-                                className='block h-full rounded-full bg-kingdom-gold'
-                                style={{ width: `${Math.min(Number(score) || 0, 100)}%` }}
-                        />
-                </span>
-                <span>{Math.round(Number(score) || 0)}% match</span>
-        </div>
-);
+import MatchScoreBadge from "./MatchScoreBadge";
 
 const GroupCard = ({ group }) => {
         const { groupName, subject, matchScore, level, major, mode, groupSize, subjectsIncluded } = group || {};
@@ -22,7 +12,7 @@ const GroupCard = ({ group }) => {
                                         <h3 className='text-xl font-semibold text-kingdom-ivory'>{groupName || "Peer Group"}</h3>
                                         <p className='text-sm text-kingdom-ivory/70'>{subjectsPreview}</p>
                                 </div>
-                                <ScoreBadge score={matchScore} />
+                                <MatchScoreBadge score={matchScore} />
                         </div>
 
                         <div className='grid grid-cols-2 gap-3 text-sm text-kingdom-ivory/80 sm:grid-cols-3'>
@@ -47,6 +37,13 @@ const GroupCard = ({ group }) => {
                         <div className='flex flex-wrap gap-2 text-xs text-kingdom-ivory/70'>
                                 <span className='rounded-full bg-kingdom-plum/30 px-3 py-1'>Collaborative</span>
                                 {mode && <span className='rounded-full bg-kingdom-purple/30 px-3 py-1 capitalize'>{mode}</span>}
+                        </div>
+
+                        <div className='flex flex-wrap gap-2'>
+                                <button className='rounded-xl bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal transition hover:bg-amber-400'>
+                                        Join Group
+                                </button>
+                                {/* TODO: connect CTA to group details modal or join flow */}
                         </div>
                 </article>
         );

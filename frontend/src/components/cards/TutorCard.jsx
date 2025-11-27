@@ -1,25 +1,14 @@
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-import { startPrivateConversation } from "../services/messagingService";
-import { useUserStore } from "../stores/useUserStore";
-import TutorBadge from "./TutorBadge";
-
-const ScoreBadge = ({ score }) => (
-        <div className='flex items-center gap-2 rounded-full bg-kingdom-plum/30 px-3 py-1 text-sm font-semibold text-kingdom-gold'>
-                <span className='h-2 w-14 overflow-hidden rounded-full bg-kingdom-cream/10'>
-                        <span
-                                className='block h-full rounded-full bg-kingdom-gold'
-                                style={{ width: `${Math.min(Number(score) || 0, 100)}%` }}
-                        />
-                </span>
-                <span>{Math.round(Number(score) || 0)}% match</span>
-        </div>
-);
+import { startPrivateConversation } from "../../services/messagingService";
+import { useUserStore } from "../../stores/useUserStore";
+import TutorBadge from "../TutorBadge";
+import MatchScoreBadge from "./MatchScoreBadge";
 
 const TutorCard = ({ tutor }) => {
-        const { name, subject, level, major, mode, matchScore, badge, avatarUrl, verified } = tutor || {};
-        const badgeName = badge?.name || badge;
+        const { name, subject, level, major, mode, matchScore, badge, avatarUrl, verified, teacherBadge } = tutor || {};
+        const badgeName = teacherBadge || badge?.name || badge;
         const frameClass = badgeName ? `avatar-frame-${badgeName.toLowerCase?.()}` : "";
         const navigate = useNavigate();
         const user = useUserStore((state) => state.user);
@@ -73,7 +62,7 @@ const TutorCard = ({ tutor }) => {
                                                 <p className='text-sm text-kingdom-ivory/70'>{subject || "Subject"}</p>
                                         </div>
                                 </div>
-                                <ScoreBadge score={matchScore} />
+                                <MatchScoreBadge score={matchScore} />
                         </div>
 
                         <div className='grid grid-cols-2 gap-3 text-sm text-kingdom-ivory/80 sm:grid-cols-3'>
@@ -101,7 +90,7 @@ const TutorCard = ({ tutor }) => {
                                         onClick={handleMessage}
                                         className='rounded-xl bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal transition hover:bg-amber-400'
                                 >
-                                        Message
+                                        Contact Tutor
                                 </button>
                                 {/* TODO: show availability or lesson booking action next to messaging */}
                         </div>

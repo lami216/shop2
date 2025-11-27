@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+
+import ErrorBox from "../../components/ui/ErrorBox";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { fetchAdminPayments, updateAdminPayment } from "../../services/adminService";
 
 const AdminPaymentsPage = () => {
@@ -30,8 +33,8 @@ const AdminPaymentsPage = () => {
                 }
         };
 
-        if (loading) return <p>Loading admin data...</p>;
-        if (error) return <p className='text-red-400'>{error}</p>;
+        if (loading) return <LoadingSpinner label='Loading payments...' />;
+        if (error) return <ErrorBox message={error} onRetry={loadPayments} />;
 
         return (
                 <div className='space-y-4'>

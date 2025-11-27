@@ -1,18 +1,8 @@
-const ScoreBadge = ({ score }) => (
-        <div className='flex items-center gap-2 rounded-full bg-kingdom-plum/30 px-3 py-1 text-sm font-semibold text-kingdom-gold'>
-                <span className='h-2 w-14 overflow-hidden rounded-full bg-kingdom-cream/10'>
-                        <span
-                                className='block h-full rounded-full bg-kingdom-gold'
-                                style={{ width: `${Math.min(Number(score) || 0, 100)}%` }}
-                        />
-                </span>
-                <span>{Math.round(Number(score) || 0)}% match</span>
-        </div>
-);
+import MatchScoreBadge from "./MatchScoreBadge";
 
 const HelpCard = ({ profile }) => {
         const { name, subject, matchScore, level, major, mode, needsHelp, canHelp } = profile || {};
-        const helperMessage = canHelp ? "This user can explain to you" : needsHelp ? "Needs explanation" : "Mutual help";
+        const helperMessage = canHelp ? "This student is ready to explain this subject" : needsHelp ? "Needs explanation" : "Mutual help";
 
         return (
                 <article className='flex flex-col gap-3 rounded-2xl border border-kingdom-gold/10 bg-black/40 p-4 shadow-royal-soft transition hover:border-kingdom-gold/30 hover:bg-black/60'>
@@ -22,7 +12,7 @@ const HelpCard = ({ profile }) => {
                                         <h3 className='text-xl font-semibold text-kingdom-ivory'>{name || "Student"}</h3>
                                         <p className='text-sm text-kingdom-ivory/70'>{subject || "Subject"}</p>
                                 </div>
-                                <ScoreBadge score={matchScore} />
+                                <MatchScoreBadge score={matchScore} />
                         </div>
 
                         <div className='grid grid-cols-2 gap-3 text-sm text-kingdom-ivory/80 sm:grid-cols-3'>
@@ -44,6 +34,13 @@ const HelpCard = ({ profile }) => {
                                 <span className='rounded-full bg-kingdom-plum/30 px-3 py-1'>{helperMessage}</span>
                                 {canHelp && <span className='rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-100'>Helper</span>}
                                 {needsHelp && <span className='rounded-full bg-kingdom-purple/30 px-3 py-1'>Needs Support</span>}
+                        </div>
+
+                        <div className='flex flex-wrap gap-2'>
+                                <button className='rounded-xl bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal transition hover:bg-amber-400'>
+                                        Message
+                                </button>
+                                {/* TODO: connect CTA to help request flow */}
                         </div>
                 </article>
         );

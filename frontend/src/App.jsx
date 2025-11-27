@@ -17,13 +17,14 @@ import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
 import { useEffect } from "react";
-import LoadingSpinner from "./components/LoadingSpinner";
+import LoadingSpinner from "./components/ui/LoadingSpinner";
 import CartPage from "./pages/CartPage";
 import { useCartStore } from "./stores/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ChatPage from "./pages/ChatPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
         const user = useUserStore((state) => state.user);
@@ -78,6 +79,7 @@ function App() {
                                         <Route path='/purchase-success' element={<PurchaseSuccessPage />} />
                                         <Route path='/purchase-cancel' element={<PurchaseCancelPage />} />
                                         <Route path='/chat' element={<ChatPage />} />
+                                        <Route path='*' element={<NotFoundPage />} />
                                 </Routes>
                         </div>
                         <Toaster />

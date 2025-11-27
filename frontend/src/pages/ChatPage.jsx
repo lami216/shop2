@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 import ConversationList from "../components/ConversationList";
 import MessageThread from "../components/MessageThread";
+import ErrorBox from "../components/ui/ErrorBox";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import {
         fetchConversationById,
         fetchConversations,
@@ -132,6 +134,13 @@ const ChatPage = () => {
                                 <div className='max-w-md space-y-4 rounded-2xl border border-kingdom-gold/20 bg-black/40 p-6'>
                                         <h1 className='text-2xl font-bold text-kingdom-gold'>{t("page.chat.heading")}</h1>
                                         <p className='text-kingdom-ivory/70'>{t("chat.loginPrompt")}</p>
+                                        <Link
+                                                to='/login'
+                                                className='inline-flex w-full justify-center rounded-full bg-kingdom-gold px-4 py-2 font-semibold text-kingdom-charcoal transition hover:bg-amber-300'
+                                        >
+                                                {t("nav.login")}
+                                        </Link>
+                                        {/* TODO: replace with centralized ProtectedRoute */}
                                 </div>
                         </div>
                 );
@@ -145,15 +154,11 @@ const ChatPage = () => {
                                                 <div className='rounded-2xl border border-kingdom-gold/20 bg-black/40 p-4 shadow-royal-soft'>
                                                         <div className='mb-4 flex items-center justify-between'>
                                                                 <h2 className='text-xl font-semibold text-kingdom-ivory'>{t("page.chat.heading")}</h2>
-                                                                {loading && <span className='text-xs text-kingdom-ivory/70'>{t("common.loading")}</span>}
+                                                                {loading && <LoadingSpinner label={t("common.loading") || "Loading"} />}
                                                         </div>
-                                                        {error && (
-                                                                <p className='mb-3 rounded-lg bg-red-500/10 p-2 text-sm text-red-200'>
-                                                                        {error}
-                                                                </p>
-                                                        )}
-                                                        {conversations.length === 0 && !loading ? (
-                                                                <p className='text-sm text-kingdom-ivory/70'>{t("chat.empty")}</p>
+                                                        {error && <ErrorBox message={error} onRetry={loadConversations} />}
+                                                        {conversations.length === 0 && !loading && !error ? (
+                                                                <p className='text-sm text-kingdom-ivory/70'>{t("chat.empty") || "You have no conversations yet"}</p>
                                                         ) : (
                                                                 <ConversationList
                                                                         conversations={conversations}
@@ -168,12 +173,6 @@ const ChatPage = () => {
 
                                 {showThreadPanel && (
                                         <div className='lg:w-2/3'>
-                                                {isMobile && showList && (
-                                                        <div className='rounded-2xl border border-kingdom-gold/20 bg-black/30 p-4 text-sm text-kingdom-ivory/80'>
-                                                                {t("search.startState")}
-                                                        </div>
-                                                )}
-
                                                 {!showList && isMobile && (
                                                         <button
                                                                 onClick={() => setShowList(true)}

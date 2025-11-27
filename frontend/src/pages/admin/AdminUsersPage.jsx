@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+
+import ErrorBox from "../../components/ui/ErrorBox";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { fetchAdminUsers, updateAdminUser } from "../../services/adminService";
 
 const AdminUsersPage = () => {
@@ -39,8 +42,8 @@ const AdminUsersPage = () => {
                 }
         };
 
-        if (loading) return <p>Loading admin data...</p>;
-        if (error) return <p className='text-red-400'>{error}</p>;
+        if (loading) return <LoadingSpinner label='Loading users...' />;
+        if (error) return <ErrorBox message={error} onRetry={loadUsers} />;
 
         return (
                 <div className='space-y-4'>
