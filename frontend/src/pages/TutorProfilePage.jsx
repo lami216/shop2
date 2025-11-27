@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 
 import { apiClient } from "../lib/apiClient";
 import { useUserStore } from "../stores/useUserStore";
+import { confirmPayment, getMyPayments, initiatePayment } from "../services/paymentService";
 
 const LEVEL_OPTIONS = [
         { value: "L1", label: "Level 1" },
@@ -19,6 +20,200 @@ const emptyProfileState = {
         pricingSemester: "",
         bankNumber: "",
         subjectPricing: [],
+};
+
+const TutorPaymentsPanel = ({ onRefreshProfile }) => {
+        const [payments, setPayments] = useState([]);
+        const [loading, setLoading] = useState(false);
+        const [actingId, setActingId] = useState(null);
+        const [formState, setFormState] = useState({
+                studentId: "",
+                subjectId: "",
+                amount: "",
+                period: "monthly",
+                notes: "",
+        });
+        const [saving, setSaving] = useState(false);
+
+        const fetchPayments = async () => {
+                setLoading(true);
+                try {
+                        const data = await getMyPayments();
+                        setPayments(data || []);
+                } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data?.message || "تعذر تحميل الدفعات");
+                } finally {
+                        setLoading(false);
+                }
+        };
+
+        useEffect(() => {
+                fetchPayments();
+        }, []);
+
+        const handleCreatePayment = async () => {
+                if (!formState.studentId || !formState.subjectId || !formState.amount || !formState.period) {
+                        toast.error("أكمل بيانات الدفعة");
+                        return;
+                }
+
+                setSaving(true);
+                try {
+                        await initiatePayment({
+                                studentId: formState.studentId,
+                                subjectId: formState.subjectId,
+                                amount: Number(formState.amount),
+                                period: formState.period,
+                                notes: formState.notes,
+                        });
+                        toast.success("تم إنشاء رابط الاشتراك");
+                        setFormState({ studentId: "", subjectId: "", amount: "", period: "monthly", notes: "" });
+                        fetchPayments();
+                } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data?.message || "تعذر إنشاء الدفعة");
+                } finally {
+                        setSaving(false);
+                }
+        };
+
+        const handleDecision = async (paymentId, approved) => {
+                setActingId(`${paymentId}-${approved ? "approve" : "reject"}`);
+                try {
+                        await confirmPayment(paymentId, { approved });
+                        toast.success(approved ? "تم التأكيد" : "تم الرفض");
+                        fetchPayments();
+                        if (approved && typeof onRefreshProfile === "function") {
+                                onRefreshProfile();
+                        }
+                } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data?.message || "تعذر تحديث الدفعة");
+                } finally {
+                        setActingId(null);
+                }
+        };
+
+        return (
+                <div className='rounded-2xl border border-kingdom-gold/20 bg-black/40 p-6 shadow-royal-soft'>
+                        <div className='flex flex-col gap-2'>
+                                <h2 className='text-2xl font-semibold text-kingdom-gold'>دفعات الطلاب</h2>
+                                <p className='text-kingdom-cream/70'>أرسل روابط الاشتراك وتابع الإيصالات يدويًا.</p>
+                        </div>
+
+                        <div className='mt-4 grid gap-3 sm:grid-cols-2'>
+                                <label className='flex flex-col gap-1 text-sm'>
+                                        <span>معرّف الطالب</span>
+                                        <input
+                                                className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
+                                                value={formState.studentId}
+                                                onChange={(e) => setFormState({ ...formState, studentId: e.target.value })}
+                                                placeholder='Student ID'
+                                        />
+                                </label>
+                                <label className='flex flex-col gap-1 text-sm'>
+                                        <span>المادة</span>
+                                        <input
+                                                className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
+                                                value={formState.subjectId}
+                                                onChange={(e) => setFormState({ ...formState, subjectId: e.target.value })}
+                                                placeholder='Subject ID'
+                                        />
+                                </label>
+                                <label className='flex flex-col gap-1 text-sm'>
+                                        <span>المبلغ</span>
+                                        <input
+                                                className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
+                                                value={formState.amount}
+                                                onChange={(e) => setFormState({ ...formState, amount: e.target.value })}
+                                                placeholder='مثال: 250'
+                                        />
+                                </label>
+                                <label className='flex flex-col gap-1 text-sm'>
+                                        <span>الفترة</span>
+                                        <select
+                                                className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
+                                                value={formState.period}
+                                                onChange={(e) => setFormState({ ...formState, period: e.target.value })}
+                                        >
+                                                <option value='monthly'>شهري</option>
+                                                <option value='semester'>فصلي</option>
+                                        </select>
+                                </label>
+                                <label className='sm:col-span-2 flex flex-col gap-1 text-sm'>
+                                        <span>ملاحظات</span>
+                                        <textarea
+                                                className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
+                                                rows={2}
+                                                value={formState.notes}
+                                                onChange={(e) => setFormState({ ...formState, notes: e.target.value })}
+                                                placeholder='رسالة بسيطة للطالب'
+                                        />
+                                </label>
+                        </div>
+                        <div className='mt-3 flex justify-end'>
+                                <button
+                                        onClick={handleCreatePayment}
+                                        disabled={saving}
+                                        className='rounded-lg bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal disabled:opacity-60'
+                                >
+                                        {saving ? "جارٍ الإرسال..." : "إرسال رابط اشتراك"}
+                                </button>
+                        </div>
+                        <p className='mt-2 text-xs text-kingdom-cream/60'>TODO: ربط هذه الخطوة مع الرسائل أو محادثة الاتفاق.</p>
+
+                        <div className='mt-6'>
+                                <h3 className='text-lg font-semibold text-kingdom-gold'>قائمة الدفعات</h3>
+                                {loading ? (
+                                        <p className='mt-3 text-sm text-kingdom-cream/70'>جاري التحميل...</p>
+                                ) : payments.length === 0 ? (
+                                        <p className='mt-3 text-sm text-kingdom-cream/70'>لا توجد دفعات مسجلة بعد.</p>
+                                ) : (
+                                        <div className='mt-3 space-y-3'>
+                                                {payments.map((payment) => (
+                                                        <div
+                                                                key={payment._id}
+                                                                className='rounded-xl border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-4'
+                                                        >
+                                                                <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+                                                                        <div className='space-y-1 text-sm text-kingdom-cream/80'>
+                                                                                <p>الطالب: {payment.student}</p>
+                                                                                <p>المادة: {payment.subject?.name || payment.subject}</p>
+                                                                                <p>المبلغ: {payment.amount}</p>
+                                                                                <p>الفترة: {payment.period}</p>
+                                                                                <p className='text-xs text-kingdom-cream/60'>الحالة: {payment.status}</p>
+                                                                                {payment.receiptImage && (
+                                                                                        <p className='text-xs text-kingdom-cream/60'>الإيصال: {payment.receiptImage}</p>
+                                                                                )}
+                                                                        </div>
+
+                                                                        {payment.status === "awaiting_tutor_confirmation" && (
+                                                                                <div className='flex gap-2'>
+                                                                                        <button
+                                                                                                onClick={() => handleDecision(payment._id, true)}
+                                                                                                disabled={actingId === `${payment._id}-approve`}
+                                                                                                className='rounded-lg bg-emerald-500/80 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60'
+                                                                                        >
+                                                                                                {actingId === `${payment._id}-approve` ? "جارٍ التأكيد" : "تأكيد"}
+                                                                                        </button>
+                                                                                        <button
+                                                                                                onClick={() => handleDecision(payment._id, false)}
+                                                                                                disabled={actingId === `${payment._id}-reject`}
+                                                                                                className='rounded-lg bg-red-500/80 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60'
+                                                                                        >
+                                                                                                {actingId === `${payment._id}-reject` ? "جارٍ الرفض" : "رفض"}
+                                                                                        </button>
+                                                                                </div>
+                                                                        )}
+                                                                </div>
+                                                        </div>
+                                                ))}
+                                        </div>
+                                )}
+                        </div>
+                </div>
+        );
 };
 
 const TutorProfilePage = () => {
@@ -358,6 +553,8 @@ const TutorProfilePage = () => {
                                                 </div>
                                         </aside>
                                 </div>
+
+                                <TutorPaymentsPanel onRefreshProfile={fetchProfile} />
 
                                 {loading && <p className='text-sm text-kingdom-cream/70'>جاري تحميل الملف...</p>}
                         </div>
