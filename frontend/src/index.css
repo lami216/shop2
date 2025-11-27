@@ -21,6 +21,15 @@
                 background-color: #040107;
         }
 
+        body.rtl {
+                direction: rtl;
+                text-align: right;
+        }
+
+        body:not(.rtl) {
+                direction: ltr;
+        }
+
         ::selection {
                 background: rgba(212, 175, 55, 0.35);
                 color: var(--royal-ink);

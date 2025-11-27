@@ -1,13 +1,8 @@
-import { useEffect } from "react";
 import PropTypes from "prop-types";
+import { I18nProvider } from "../lib/i18n";
 
 const LanguageProvider = ({ children }) => {
-        useEffect(() => {
-                document.documentElement.lang = "ar";
-                document.documentElement.dir = "rtl";
-        }, []);
-
-        return children;
+        return <I18nProvider>{children}</I18nProvider>;
 };
 
 export default LanguageProvider;

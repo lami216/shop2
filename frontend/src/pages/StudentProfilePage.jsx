@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 
 import { apiClient } from "../lib/apiClient";
 import { getMyPayments, uploadReceipt } from "../services/paymentService";
+import useTranslation from "../hooks/useTranslation";
 
 const emptyProfileState = {
         college: "",
@@ -939,6 +940,7 @@ const StudentPaymentsPanel = () => {
 };
 
 const StudentProfilePage = () => {
+        const { t, i18n } = useTranslation();
         const [profile, setProfile] = useState(null);
         const [formState, setFormState] = useState(emptyProfileState);
         const [loading, setLoading] = useState(true);
@@ -985,6 +987,10 @@ const StudentProfilePage = () => {
                 fetchProfile();
         }, []);
 
+        useEffect(() => {
+                document.title = t("page.studentProfile.title") || "Moltaqa";
+        }, [i18n.language, t]);
+
         const handleSubmit = async (e) => {
                 e.preventDefault();
                 setSaving(true);
@@ -1021,26 +1027,23 @@ const StudentProfilePage = () => {
         return (
                 <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
                         <div className='relative z-10 mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-24 pt-24 sm:px-6 lg:px-8'>
-                                <h1 className='text-4xl font-bold text-kingdom-gold'>ملف الطالب - ملتقى Moltaqa</h1>
-                                <p className='text-kingdom-cream/80'>
-                                        Build your Moltaqa student profile, manage your study ads, and connect with peers. TODO: improve onboarding
-                                        and subject catalogs.
-                                </p>
+                                <h1 className='text-4xl font-bold text-kingdom-gold'>{t("page.studentProfile.heading")}</h1>
+                                <p className='text-kingdom-cream/80'>{t("student.profile.subtitle")}</p>
 
                                 <div className='rounded-2xl border border-kingdom-gold/20 bg-black/40 p-6 shadow-royal-soft'>
                                         <div className='flex flex-col gap-1'>
-                                                <h2 className='text-2xl font-semibold text-kingdom-gold'>Student profile</h2>
+                                                <h2 className='text-2xl font-semibold text-kingdom-gold'>{t("page.studentProfile.heading")}</h2>
                                                 <p className='text-kingdom-cream/70'>
                                                         Share your academic context. These basics help us match you later.
                                                 </p>
                                         </div>
 
                                         {loading ? (
-                                                <p className='mt-4 text-kingdom-cream/70'>Loading profile...</p>
+                                                <p className='mt-4 text-kingdom-cream/70'>{t("common.loading")}</p>
                                         ) : (
                                                 <form className='mt-4 grid gap-4 sm:grid-cols-2' onSubmit={handleSubmit}>
                                                         <label className='flex flex-col gap-1 text-sm'>
-                                                                <span>College</span>
+                                                                <span>{t("student.college") || "College"}</span>
                                                                 <input
                                                                         className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
                                                                         value={formState.college}
@@ -1049,7 +1052,7 @@ const StudentProfilePage = () => {
                                                                 />
                                                         </label>
                                                         <label className='flex flex-col gap-1 text-sm'>
-                                                                <span>Major</span>
+                                                                <span>{t("student.major") || "Major"}</span>
                                                                 <input
                                                                         className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
                                                                         value={formState.major}
@@ -1058,7 +1061,7 @@ const StudentProfilePage = () => {
                                                                 />
                                                         </label>
                                                         <label className='flex flex-col gap-1 text-sm'>
-                                                                <span>Level</span>
+                                                                <span>{t("common.level")}</span>
                                                                 <input
                                                                         className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
                                                                         value={formState.level}
@@ -1067,7 +1070,7 @@ const StudentProfilePage = () => {
                                                                 />
                                                         </label>
                                                         <label className='flex flex-col gap-1 text-sm'>
-                                                                <span>Current subjects</span>
+                                                                <span>{t("common.subject")}</span>
                                                                 <input
                                                                         className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
                                                                         value={formState.currentSubjectsText}
@@ -1107,7 +1110,7 @@ const StudentProfilePage = () => {
                                                                 </select>
                                                         </label>
                                                         <label className='flex flex-col gap-1 text-sm sm:col-span-2'>
-                                                                <span>Preferred study times</span>
+                                                                <span>{t("student.studyTimes") || "Preferred study times"}</span>
                                                                 <input
                                                                         className='rounded-lg border border-kingdom-gold/30 bg-kingdom-charcoal/40 p-2 text-white'
                                                                         value={formState.studyTimesText}
@@ -1121,7 +1124,7 @@ const StudentProfilePage = () => {
                                                                         className='w-full rounded-lg bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal'
                                                                         disabled={saving}
                                                                 >
-                                                                        {saving ? "Saving..." : profile ? "Update profile" : "Create profile"}
+                                                                        {saving ? t("common.loading") : t("common.save")}
                                                                 </button>
                                                         </div>
                                                 </form>
