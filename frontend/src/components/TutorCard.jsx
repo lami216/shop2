@@ -1,3 +1,8 @@
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+import { startPrivateConversation } from "../services/messagingService";
+import { useUserStore } from "../stores/useUserStore";
 import TutorBadge from "./TutorBadge";
 
 const ScoreBadge = ({ score }) => (
@@ -16,6 +21,33 @@ const TutorCard = ({ tutor }) => {
         const { name, subject, level, major, mode, matchScore, badge, avatarUrl, verified } = tutor || {};
         const badgeName = badge?.name || badge;
         const frameClass = badgeName ? `avatar-frame-${badgeName.toLowerCase?.()}` : "";
+        const navigate = useNavigate();
+        const user = useUserStore((state) => state.user);
+
+        const handleMessage = async () => {
+                try {
+                        const targetUserId = tutor?.userId || tutor?._id || tutor?.id;
+
+                        if (!targetUserId) {
+                                toast.error("Cannot open chat for this tutor yet");
+                                return;
+                        }
+
+                        if (!user) {
+                                navigate("/login");
+                                return;
+                        }
+
+                        const conversation = await startPrivateConversation(targetUserId);
+                        if (conversation?._id) {
+                                navigate(`/chat?c=${conversation._id}`);
+                        }
+                        // TODO: refine routing to thread-specific tabs for active lessons
+                } catch (error) {
+                        console.error("Failed to start tutor conversation", error);
+                        toast.error(error.response?.data?.message || "Unable to start chat");
+                }
+        };
 
         return (
                 <article className='flex flex-col gap-3 rounded-2xl border border-kingdom-gold/10 bg-black/40 p-4 shadow-royal-soft transition hover:border-kingdom-gold/30 hover:bg-black/60'>
@@ -62,6 +94,16 @@ const TutorCard = ({ tutor }) => {
                         <div className='flex flex-wrap items-center gap-2 text-xs text-kingdom-ivory/70'>
                                 <span className='rounded-full bg-kingdom-plum/30 px-3 py-1'>Tutor</span>
                                 {badgeName && <TutorBadge badgeName={badgeName} />}
+                        </div>
+
+                        <div className='flex flex-wrap gap-2'>
+                                <button
+                                        onClick={handleMessage}
+                                        className='rounded-xl bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal transition hover:bg-amber-400'
+                                >
+                                        Message
+                                </button>
+                                {/* TODO: show availability or lesson booking action next to messaging */}
                         </div>
                 </article>
         );

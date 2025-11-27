@@ -77,7 +77,8 @@
                 "logout": "تسجيل الخروج",
                 "studentProfile": "ملف الطالب",
                 "tutorProfile": "ملف المعلم",
-                "adminDashboard": "لوحة المشرف"
+                "adminDashboard": "لوحة المشرف",
+                "messages": "الرسائل"
         },
         "home": {
                 "titleLine1": "مختارات ملتقى Moltaqa",

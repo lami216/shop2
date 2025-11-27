@@ -9,6 +9,8 @@ import "./Ad.js";
 import "./Payment.js";
 import "./Subscription.js";
 import "./Badge.js";
+import "./Conversation.js";
+import "./Message.js";
 
 // Existing store models remain isolated for the shop domain
 import "./category.model.js";

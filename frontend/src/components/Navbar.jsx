@@ -24,6 +24,7 @@ const Navbar = () => {
                 // TODO: show student profile link only to students once role-aware menus are finalized
                 { to: "/student/profile", label: t("nav.studentProfile") },
                 { to: "/tutor/profile", label: t("nav.tutorProfile") },
+                { to: "/chat", label: t("nav.messages") },
                 { to: "/admin", label: t("nav.adminDashboard") },
         ];
 

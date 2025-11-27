@@ -1,3 +1,8 @@
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+import { startPrivateConversation } from "../services/messagingService";
+import { useUserStore } from "../stores/useUserStore";
 import TutorBadge from "./TutorBadge";
 
 const ScoreBadge = ({ score }) => (
@@ -15,6 +20,33 @@ const ScoreBadge = ({ score }) => (
 const PartnerCard = ({ partner }) => {
         const { name, level, major, mode, subject, matchScore, badge, avatarColor } = partner || {};
         const avatarBackground = avatarColor || (partner?.gender === "female" ? "bg-pink-500/50" : "bg-kingdom-purple/50");
+        const navigate = useNavigate();
+        const user = useUserStore((state) => state.user);
+
+        const handleMessage = async () => {
+                try {
+                        const targetUserId = partner?.userId || partner?._id || partner?.id;
+
+                        if (!targetUserId) {
+                                toast.error("Cannot open chat for this partner yet");
+                                return;
+                        }
+
+                        if (!user) {
+                                navigate("/login");
+                                return;
+                        }
+
+                        const conversation = await startPrivateConversation(targetUserId);
+                        if (conversation?._id) {
+                                navigate(`/chat?c=${conversation._id}`);
+                        }
+                        // TODO: add partner compatibility context to chat launch
+                } catch (error) {
+                        console.error("Failed to start partner conversation", error);
+                        toast.error(error.response?.data?.message || "Unable to start chat");
+                }
+        };
 
         return (
                 <article className='flex flex-col gap-3 rounded-2xl border border-kingdom-gold/10 bg-black/40 p-4 shadow-royal-soft transition hover:border-kingdom-gold/30 hover:bg-black/60'>
@@ -55,6 +87,15 @@ const PartnerCard = ({ partner }) => {
                                                 <TutorBadge badgeName={badge} />
                                         </span>
                                 )}
+                        </div>
+
+                        <div className='flex flex-wrap gap-2'>
+                                <button
+                                        onClick={handleMessage}
+                                        className='rounded-xl bg-kingdom-gold px-4 py-2 text-sm font-semibold text-kingdom-charcoal transition hover:bg-amber-400'
+                                >
+                                        Message
+                                </button>
                         </div>
                 </article>
         );
