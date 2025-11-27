@@ -45,9 +45,9 @@ const Footer = () => {
                 <footer className='bg-kingdom-plum text-kingdom-ivory'>
                         <div className='mx-auto flex flex-col gap-10 px-6 py-12 text-center sm:gap-12 sm:px-8 lg:max-w-6xl lg:px-0'>
                                 <div className='flex flex-col gap-6'>
-                                        <h2 className='text-2xl font-semibold tracking-[0.18em] text-kingdom-gold'>مملكة العطور</h2>
+                                        <h2 className='text-2xl font-semibold tracking-[0.18em] text-kingdom-gold'>ملتقى Moltaqa</h2>
                                         <p className='text-sm leading-relaxed text-kingdom-ivory/70'>
-                                                نفخر بتقديم أرقى الروائح العربية والعالمية مع تجربة ملكية متكاملة وخدمة عملاء راقية على مدار الساعة.
+                                                منصة تجمع الطلاب والمعلمين في مساحة واحدة للتواصل والتعلم. TODO: لاحقاً سنضيف روابط للمواد والمجموعات والدفعات.
                                         </p>
                                 </div>
 
@@ -55,7 +55,7 @@ const Footer = () => {
                                         <div className='flex flex-col items-center gap-3 sm:items-start'>
                                                 <PaymentMethods />
                                                 <small className='text-xs text-kingdom-ivory/60'>آخر تحديث للموقع: {buildTime}</small>
-                                                <small className='text-xs text-kingdom-ivory/60'>© {new Date().getFullYear()} مملكة العطور. جميع الحقوق محفوظة.</small>
+                                                <small className='text-xs text-kingdom-ivory/60'>© {new Date().getFullYear()} ملتقى Moltaqa. جميع الحقوق محفوظة.</small>
                                         </div>
                                         <nav className='flex items-center justify-center gap-4'>
                                                 {socialLinks.map((item) => (

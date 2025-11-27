@@ -66,7 +66,7 @@ const PeopleAlsoBought = ({ productId, category }) => {
                                 {t("cart.recommendations.title")}
                         </h3>
                         <p className='mt-2 text-sm text-kingdom-muted'>
-                                عطورا تكمل تجربتك الفاخرة بتوقيع مملكة العطور.
+                                عطورا تكمل تجربتك الفاخرة بتوقيع ملتقى Moltaqa.
                         </p>
                         <div className='mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
                                 {recommendations.map((product) => (

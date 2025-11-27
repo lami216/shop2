@@ -1,6 +1,6 @@
 {
         "common": {
-        "appName": "مملكة العطور",
+                "appName": "ملتقى Moltaqa",
                 "loading": "جاري التحميل...",
                 "actions": {
                         "add": "إضافة",
@@ -42,7 +42,7 @@
                         "whatsAppInvalid": "يرجى إدخال رقم واتساب صحيح مكوّن من 8 أرقام.",
                         "fillAllFields": "يرجى تعبئة جميع الحقول قبل إرسال الطلب.",
                         "whatsAppOpenFailed": "تعذر فتح واتساب تلقائياً، يرجى المحاولة مرة أخرى.",
-                "orderThankYou": "شكراً لتسوقك من مملكة العطور!",
+                "orderThankYou": "شكراً لتسوقك من ملتقى Moltaqa!",
                         "noSessionId": "لا يوجد رقم جلسة في الرابط",
                         "couponApplied": "الكوبون المطبق",
                         "availableCoupon": "الكوبون المتاح لديك:",
@@ -70,21 +70,24 @@
                 "cart": "السلة",
                 "dashboard": "لوحة التحكم",
                 "search": "بحث",
-                "searchPlaceholder": "ابحث عن عطرك المفضل",
+                "searchPlaceholder": "ابحث داخل ملتقى Moltaqa",
                 "admin": "المشرف",
                 "login": "تسجيل الدخول",
                 "signup": "إنشاء حساب",
-                "logout": "تسجيل الخروج"
+                "logout": "تسجيل الخروج",
+                "studentProfile": "ملف الطالب",
+                "tutorProfile": "ملف المعلم",
+                "adminDashboard": "لوحة المشرف"
         },
         "home": {
-                "titleLine1": "مختارات مملكة العطور",
+                "titleLine1": "مختارات ملتقى Moltaqa",
                 "titleHighlight": "",
-                "subtitle": "انتقينا لك تشكيلات عطرية فاخرة تجمع بين الأصالة والفخامة لترافقك في كل لحظة مميزة.",
-                "searchPlaceholder": "ابحث عن اسم العطر أو مكوناته",
-                "searchTagline": "استكشف عالماً من الروائح الفاخرة",
-                "searchHint": "فلتر تلقائي حسب الفئة الحالية",
-                "featuredTitle": "روائع مختارة",
-                "featuredTag": "عرض حصري",
+                "subtitle": "مرحلة انتقالية لإطلاق تجربة التعلم والتواصل في ملتقى Moltaqa.",
+                "searchPlaceholder": "ابحث عن درس أو مهارة",
+                "searchTagline": "استكشف مسارات التعلم القادمة",
+                "searchHint": "يتم لاحقاً تخصيص النتائج حسب المواد",
+                "featuredTitle": "محتوى تجريبي",
+                "featuredTag": "تخطيط",
                 "featuredNext": "التالي",
                 "featuredPrev": "السابق"
         },
@@ -428,13 +431,13 @@
                         "coupon": "الكوبون المستخدم: {{code}} (خصم {{discount}}%)",
                         "savings": "قيمة التوفير: {{amount}}",
                         "total": "الإجمالي المستحق: {{amount}}",
-                        "thanks": "شكراً لتسوقك من مملكة العطور!",
+                        "thanks": "شكراً لتسوقك من ملتقى Moltaqa!",
                         "orderSent": "تم إرسال طلبك بنجاح عبر واتساب!"
                 }
         },
         "auth": {
                 "login": {
-                        "title": "مرحباً بعودتك إلى مملكة العطور",
+                        "title": "مرحباً بعودتك إلى ملتقى Moltaqa",
                         "email": "البريد الإلكتروني",
                         "password": "كلمة المرور",
                         "placeholderEmail": "you@example.com",
@@ -445,7 +448,7 @@
                         "cta": "سجل الآن"
                 },
                 "signup": {
-                        "title": "أنشئ حسابك في مملكة العطور",
+                        "title": "أنشئ حسابك في ملتقى Moltaqa",
                         "name": "الاسم الكامل",
                         "email": "البريد الإلكتروني",
                         "password": "كلمة المرور",
@@ -463,7 +466,7 @@
                 "success": {
                         "heading": "تم إرسال الطلب بنجاح",
                         "headingWhatsApp": "تم استلام طلبك عبر واتساب",
-                        "subheading": "شكراً لتسوقك من مملكة العطور! تم تسجيل طلب منتجاتك بنجاح.",
+                        "subheading": "شكراً لتسوقك من ملتقى Moltaqa! تم تسجيل طلب منتجاتك بنجاح.",
                         "subheadingWhatsApp": "شكراً لاستخدامك واتساب لإرسال طلب منتجاتك.",
                         "followUp": "سيتواصل معك فريقنا قريباً للتحقق من العنوان وإتمام تجهيز المنتجات.",
                         "backToStore": "العودة للتسوق",

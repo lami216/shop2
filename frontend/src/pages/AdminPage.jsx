@@ -50,7 +50,7 @@ const AdminPage = () => {
                                         transition={{ duration: 0.8 }}
                                 >
                                         <span className='inline-flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-white/5 px-4 py-1 text-sm text-kingdom-gold/90'>
-                                                لوحة تحكم مملكة العطور
+                                                لوحة تحكم ملتقى Moltaqa
                                         </span>
                                         <h1 className='mt-4 text-4xl font-semibold tracking-[0.14em] text-kingdom-cream sm:text-5xl'>
                                                 {t("admin.dashboardTitle")}
