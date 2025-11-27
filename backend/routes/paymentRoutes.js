@@ -5,6 +5,7 @@ import { protect, requireStudent, requireTutor } from "../middleware/auth.middle
 import Payment from "../models/Payment.js";
 import StudentProfile from "../models/StudentProfile.js";
 import TutorProfile from "../models/TutorProfile.js";
+import { updateTutorBadge } from "../services/tutorBadgeService.js";
 
 const router = express.Router();
 
@@ -192,6 +193,12 @@ router.put("/:id/confirm", protect, requireTutor, async (req, res) => {
 
     if (approved) {
       await updateTutorIncome(payment.tutor, payment.amount || 0);
+      // TODO: add structured logging around badge recalculation outcomes
+      try {
+        await updateTutorBadge(payment.tutor);
+      } catch (error) {
+        console.error("Badge update failed after payment confirmation", error?.message || error);
+      }
       await linkActiveLesson({
         studentId: payment.student,
         tutorId: payment.tutor,

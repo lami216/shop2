@@ -47,6 +47,10 @@ const tutorProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Badge",
     },
+    subscriptionRate: {
+      type: Number,
+      default: null,
+    },
     incomeMonth: {
       type: Number,
       default: 0,
@@ -55,6 +59,7 @@ const tutorProfileSchema = new mongoose.Schema(
       type: Number,
     },
     // TODO: compute incomes from confirmed payments instead of manual values
+    // TODO: subscriptionRate will feed billing logic later; keep informational for now
     // TODO: integrate payment disbursement tracking and payout schedules
     activeLessons: [
       {

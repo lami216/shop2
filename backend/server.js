@@ -20,6 +20,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 import { connectDB } from "./lib/db.js";
 import "./models/index.js";
+import { seedDefaultBadges } from "./services/badgeService.js";
 
 // اقرأ الـ env من مسار ثابت خارج مجلد المشروع
 dotenv.config({ path: "/etc/shop2/.env" });
@@ -60,8 +61,19 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+const bootstrap = async () => {
+  await connectDB();
+  try {
+    await seedDefaultBadges();
+  } catch (error) {
+    // TODO: wire structured logger instead of console once platform observability is ready
+    console.error("Badge seeding failed", error?.message || error);
+  }
+};
+
+bootstrap();
+
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
   // TODO: extend with payment lifecycle hooks and data consistency checks
-  connectDB();
 });
