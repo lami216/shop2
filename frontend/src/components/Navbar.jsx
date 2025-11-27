@@ -21,6 +21,7 @@ const Navbar = () => {
         const mainLinks = [
                 { to: "/", label: t("nav.home") },
                 { to: "/search", label: t("nav.search") },
+                // TODO: show student profile link only to students once role-aware menus are finalized
                 { to: "/student/profile", label: t("nav.studentProfile") },
                 { to: "/tutor/profile", label: t("nav.tutorProfile") },
                 { to: "/admin", label: t("nav.adminDashboard") },
