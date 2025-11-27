@@ -25,7 +25,8 @@ const Navbar = () => {
                 { to: "/student/profile", label: t("nav.studentProfile") },
                 { to: "/tutor/profile", label: t("nav.tutorProfile") },
                 { to: "/chat", label: t("nav.messages") },
-                { to: "/admin", label: t("nav.adminDashboard") },
+                // TODO: hide admin link for non-admin users once role-aware menus are refined
+                ...(isAdmin ? [{ to: "/admin", label: t("nav.adminDashboard") }] : []),
         ];
 
         return (
