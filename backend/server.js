@@ -19,6 +19,7 @@ import searchRoutes from "./routes/searchRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
 import { connectDB } from "./lib/db.js";
+import "./models/index.js";
 
 // اقرأ الـ env من مسار ثابت خارج مجلد المشروع
 dotenv.config({ path: "/etc/shop2/.env" });
@@ -47,6 +48,8 @@ app.use("/api/tutor", tutorRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/admin", adminRoutes);
 
+// TODO: add middlewares for relational validation and Moltaqa matching flows
+
 app.use("/image", express.static(path.join(projectRoot, "image")));
 
 if (process.env.NODE_ENV === "production") {
@@ -59,5 +62,6 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
+  // TODO: extend with payment lifecycle hooks and data consistency checks
   connectDB();
 });
