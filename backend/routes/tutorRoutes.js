@@ -1,5 +1,7 @@
 import express from "express";
 
+import { protect, requireTutor } from "../middleware/auth.middleware.js";
+
 // TODO: matching
 // TODO: payments
 // TODO: receipts
@@ -10,8 +12,10 @@ import express from "express";
 
 const router = express.Router();
 
+router.use(protect, requireTutor);
+
 router.get("/", (req, res) => {
-        res.send("OK");
+        res.json({ status: "ok", user: req.user });
 });
 
 export default router;

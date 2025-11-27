@@ -1,41 +1,71 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-export const protectRoute = async (req, res, next) => {
-	try {
-		const accessToken = req.cookies.accessToken;
+const ACCESS_TOKEN_SECRET =
+        process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || "moltaqa-dev-secret";
 
-		if (!accessToken) {
-			return res.status(401).json({ message: "Unauthorized - No access token provided" });
-		}
+const extractToken = (req) => {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+                return authHeader.split(" ")[1];
+        }
 
-		try {
-			const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-			const user = await User.findById(decoded.userId).select("-password");
-
-			if (!user) {
-				return res.status(401).json({ message: "User not found" });
-			}
-
-			req.user = user;
-
-			next();
-		} catch (error) {
-			if (error.name === "TokenExpiredError") {
-				return res.status(401).json({ message: "Unauthorized - Access token expired" });
-			}
-			throw error;
-		}
-	} catch (error) {
-		console.log("Error in protectRoute middleware", error.message);
-		return res.status(401).json({ message: "Unauthorized - Invalid access token" });
-	}
+        return req.cookies?.accessToken;
 };
 
-export const adminRoute = (req, res, next) => {
-	if (req.user && req.user.role === "admin") {
-		next();
-	} else {
-		return res.status(403).json({ message: "Access denied - Admin only" });
-	}
+export const protect = async (req, res, next) => {
+        try {
+                const token = extractToken(req);
+
+                if (!token) {
+                        return res.status(401).json({ message: "Unauthorized - No token provided" });
+                }
+
+                const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+                const user = await User.findById(decoded.userId).select("-password");
+
+                if (!user) {
+                        return res.status(401).json({ message: "User not found" });
+                }
+
+                if (user?.isActive === false) {
+                        return res.status(403).json({ message: "Account is disabled" });
+                }
+
+                req.user = user;
+                next();
+        } catch (error) {
+                if (error.name === "TokenExpiredError") {
+                        return res.status(401).json({ message: "Unauthorized - Token expired" });
+                }
+                console.log("Error in protect middleware", error.message);
+                return res.status(401).json({ message: "Unauthorized - Invalid token" });
+        }
 };
+
+export const requireStudent = (req, res, next) => {
+        if (req.user?.role !== "student") {
+                return res.status(403).json({ message: "Access denied - Students only" });
+        }
+
+        next();
+};
+
+export const requireTutor = (req, res, next) => {
+        if (req.user?.role !== "tutor") {
+                return res.status(403).json({ message: "Access denied - Tutors only" });
+        }
+
+        next();
+};
+
+export const requireAdmin = (req, res, next) => {
+        if (req.user?.role !== "admin") {
+                return res.status(403).json({ message: "Access denied - Admin only" });
+        }
+
+        next();
+};
+
+export const protectRoute = protect;
+export const adminRoute = requireAdmin;

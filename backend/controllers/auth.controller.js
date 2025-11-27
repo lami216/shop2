@@ -1,6 +1,7 @@
-import { redis } from "../lib/redis.js";
-import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+import User from "../models/user.model.js";
 
 const normalizeString = (value) => {
         if (value === undefined || value === null) {
@@ -11,155 +12,121 @@ const normalizeString = (value) => {
 };
 
 const normalizeEmail = (value) => normalizeString(value).toLowerCase();
+const ACCESS_TOKEN_SECRET =
+        process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || "moltaqa-dev-secret";
 
-const generateTokens = (userId) => {
-        const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: "15m",
+const signToken = (userId) => {
+        return jwt.sign({ userId }, ACCESS_TOKEN_SECRET, { expiresIn: "7d" });
+};
+
+const setAuthCookie = (res, token) => {
+        res.cookie("accessToken", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-
-	const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-		expiresIn: "7d",
-	});
-
-	return { accessToken, refreshToken };
 };
 
-const storeRefreshToken = async (userId, refreshToken) => {
-	await redis.set(`refresh_token:${userId}`, refreshToken, "EX", 7 * 24 * 60 * 60); // 7days
-};
+const buildUserResponse = (user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        language: user.language,
+        phone: user.phone,
+        gender: user.gender,
+        avatar: user.avatar,
+});
 
-const setCookies = (res, accessToken, refreshToken) => {
-	res.cookie("accessToken", accessToken, {
-		httpOnly: true, // prevent XSS attacks, cross site scripting attack
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "strict", // prevents CSRF attack, cross-site request forgery attack
-		maxAge: 15 * 60 * 1000, // 15 minutes
-	});
-	res.cookie("refreshToken", refreshToken, {
-		httpOnly: true, // prevent XSS attacks, cross site scripting attack
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "strict", // prevents CSRF attack, cross-site request forgery attack
-		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-	});
-};
-
-export const signup = async (req, res) => {
-        const normalizedName = normalizeString(req.body?.name);
-        const normalizedEmail = normalizeEmail(req.body?.email);
-        const normalizedPassword =
-                typeof req.body?.password === "string" ? req.body.password.trim() : "";
+export const register = async (req, res) => {
         try {
-                const userExists = await User.findOne({ email: normalizedEmail });
+                const name = normalizeString(req.body?.name);
+                const email = normalizeEmail(req.body?.email);
+                const password = normalizeString(req.body?.password);
+                const phone = normalizeString(req.body?.phone);
+                const gender = normalizeString(req.body?.gender);
+                const role = normalizeString(req.body?.role) || "student";
+                const language = normalizeString(req.body?.language) || "ar";
 
-                if (userExists) {
+                if (!name || !email || !password) {
+                        return res.status(400).json({ message: "Name, email, and password are required" });
+                }
+
+                const allowedRoles = ["student", "tutor", "admin"];
+                if (!allowedRoles.includes(role)) {
+                        return res.status(400).json({ message: "Invalid role" });
+                }
+
+                const existingUser = await User.findOne({ email });
+
+                if (existingUser) {
                         return res.status(400).json({ message: "User already exists" });
                 }
 
-                const userPayload = {
-                        name: normalizedName,
-                        email: normalizedEmail,
-                        password: normalizedPassword,
-                };
+                const user = await User.create({
+                        name,
+                        email,
+                        password,
+                        phone,
+                        gender,
+                        role,
+                        language,
+                        // TODO: link StudentProfile and TutorProfile after onboarding
+                });
 
-                const user = await User.create(userPayload);
+                const token = signToken(user._id);
+                setAuthCookie(res, token);
 
-                // authenticate
-                const { accessToken, refreshToken } = generateTokens(user._id);
-                await storeRefreshToken(user._id, refreshToken);
-
-		setCookies(res, accessToken, refreshToken);
-
-		res.status(201).json({
-			_id: user._id,
-			name: user.name,
-			email: user.email,
-			role: user.role,
-		});
-	} catch (error) {
-		console.log("Error in signup controller", error.message);
-		res.status(500).json({ message: error.message });
-	}
-}; 
+                res.status(201).json(buildUserResponse(user));
+        } catch (error) {
+                console.log("Error in register controller", error.message);
+                res.status(500).json({ message: error.message });
+        }
+};
 
 export const login = async (req, res) => {
         try {
                 const email = normalizeEmail(req.body?.email);
-                const password = typeof req.body?.password === "string" ? req.body.password : "";
+                const password = normalizeString(req.body?.password);
+
                 const user = await User.findOne({ email });
 
-		if (user && (await user.comparePassword(password))) {
-			const { accessToken, refreshToken } = generateTokens(user._id);
-			await storeRefreshToken(user._id, refreshToken);
-			setCookies(res, accessToken, refreshToken);
+                if (!user) {
+                        return res.status(400).json({ message: "Invalid email or password" });
+                }
 
-			res.json({
-				_id: user._id,
-				name: user.name,
-				email: user.email,
-				role: user.role,
-			});
-		} else {
-			res.status(400).json({ message: "Invalid email or password" });
-		}
-	} catch (error) {
-		console.log("Error in login controller", error.message);
-		res.status(500).json({ message: error.message });
-	}
+                const isMatch = await bcrypt.compare(password, user.password);
+
+                if (!isMatch) {
+                        return res.status(400).json({ message: "Invalid email or password" });
+                }
+
+                const token = signToken(user._id);
+                setAuthCookie(res, token);
+
+                res.json(buildUserResponse(user));
+        } catch (error) {
+                console.log("Error in login controller", error.message);
+                res.status(500).json({ message: error.message });
+        }
 };
 
 export const logout = async (req, res) => {
-	try {
-		const refreshToken = req.cookies.refreshToken;
-		if (refreshToken) {
-			const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-			await redis.del(`refresh_token:${decoded.userId}`);
-		}
-
-		res.clearCookie("accessToken");
-		res.clearCookie("refreshToken");
-		res.json({ message: "Logged out successfully" });
-	} catch (error) {
-		console.log("Error in logout controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
+        try {
+                res.clearCookie("accessToken");
+                res.json({ message: "Logged out successfully" });
+        } catch (error) {
+                console.log("Error in logout controller", error.message);
+                res.status(500).json({ message: "Server error", error: error.message });
+        }
 };
 
-// this will refresh the access token
-export const refreshToken = async (req, res) => {
-	try {
-		const refreshToken = req.cookies.refreshToken;
-
-		if (!refreshToken) {
-			return res.status(401).json({ message: "No refresh token provided" });
-		}
-
-		const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-		const storedToken = await redis.get(`refresh_token:${decoded.userId}`);
-
-		if (storedToken !== refreshToken) {
-			return res.status(401).json({ message: "Invalid refresh token" });
-		}
-
-		const accessToken = jwt.sign({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-
-		res.cookie("accessToken", accessToken, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			maxAge: 15 * 60 * 1000,
-		});
-
-		res.json({ message: "Token refreshed successfully" });
-	} catch (error) {
-		console.log("Error in refreshToken controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
-};
-
-export const getProfile = async (req, res) => {
-	try {
-		res.json(req.user);
-	} catch (error) {
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
+export const getMe = async (req, res) => {
+        try {
+                const user = await User.findById(req.user._id).select("-password");
+                res.json(user ? buildUserResponse(user) : null);
+        } catch (error) {
+                res.status(500).json({ message: "Server error", error: error.message });
+        }
 };

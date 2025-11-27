@@ -1,35 +1,31 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import apiClient, { registerAuthHandlers } from "../lib/apiClient";
+import { registerAuthHandlers } from "../lib/apiClient";
 import { translate } from "../lib/locale";
+import { getCurrentUser, loginUser, logoutUser, registerUser } from "../services/authService";
 
 export const useUserStore = create((set) => ({
         user: null,
         loading: false,
         checkingAuth: true,
 
-        signup: async ({ name, email, password, confirmPassword }) => {
+        signup: async (payload) => {
                 set({ loading: true });
 
-                if (password !== confirmPassword) {
-                        set({ loading: false });
-                        return toast.error(translate("common.messages.passwordMismatch"));
-                }
-
                 try {
-                        const data = await apiClient.post("/auth/signup", { name, email, password });
+                        const data = await registerUser(payload);
                         set({ user: data, loading: false });
+                        toast.success(translate("common.messages.registerSuccess") || "Registered");
                 } catch (error) {
                         set({ loading: false });
                         toast.error(error.response?.data?.message || translate("toast.genericError"));
                 }
         },
-        login: async (email, password) => {
+        login: async (payload) => {
                 set({ loading: true });
 
                 try {
-                        const data = await apiClient.post("/auth/login", { email, password });
-
+                        const data = await loginUser(payload);
                         set({ user: data, loading: false });
                 } catch (error) {
                         set({ loading: false });
@@ -39,7 +35,7 @@ export const useUserStore = create((set) => ({
 
         logout: async () => {
                 try {
-                        await apiClient.post("/auth/logout");
+                        await logoutUser();
                         set({ user: null });
                 } catch (error) {
                         toast.error(error.response?.data?.message || translate("toast.logoutError"));
@@ -49,7 +45,7 @@ export const useUserStore = create((set) => ({
         checkAuth: async () => {
                 set({ checkingAuth: true });
                 try {
-                        const data = await apiClient.get("/auth/profile");
+                        const data = await getCurrentUser();
                         set({ user: data, checkingAuth: false });
                 } catch (error) {
                         console.log(error.message);
@@ -60,9 +56,8 @@ export const useUserStore = create((set) => ({
         refreshToken: async () => {
                 set({ checkingAuth: true });
                 try {
-                        const data = await apiClient.post("/auth/refresh-token", undefined, {
-                                skipAuthRetry: true,
-                        });
+                        // TODO: add refresh token endpoint when we harden auth
+                        const data = await getCurrentUser();
                         set({ checkingAuth: false });
                         return data;
                 } catch (error) {

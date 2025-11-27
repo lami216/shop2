@@ -6,8 +6,8 @@ import StudentProfilePage from "./pages/StudentProfilePage";
 import TutorProfilePage from "./pages/TutorProfilePage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import LegacyHomePage from "./pages/LegacyHomePage";
-import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -64,7 +64,7 @@ function App() {
 
                                         {/* TODO: legacy e-commerce entry point */}
                                         <Route path='/legacy-store' element={<LegacyHomePage />} />
-                                        <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />
+                                        <Route path='/signup' element={!user ? <RegisterPage /> : <Navigate to='/' />} />
                                         <Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' />} />
                                         <Route
                                                 path='/secret-dashboard'
