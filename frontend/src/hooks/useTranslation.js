@@ -1,13 +1,13 @@
-import { LANGUAGE, translate } from "../lib/locale";
+import { useI18n } from "../lib/i18n";
 
 export const useTranslation = () => {
-        const t = (key, options) => translate(key, options);
+        const { t, currentLanguage, setLanguage } = useI18n();
 
         return {
                 t,
                 i18n: {
-                        language: LANGUAGE,
-                        changeLanguage: () => {},
+                        language: currentLanguage,
+                        changeLanguage: setLanguage,
                         t,
                 },
         };

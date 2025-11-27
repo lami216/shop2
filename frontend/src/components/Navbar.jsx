@@ -16,7 +16,8 @@ const Navbar = () => {
         const { user, logout } = useUserStore();
         const isAdmin = user?.role === "admin";
         const profileLink = user?.role === "tutor" ? "/tutor/profile" : user?.role === "admin" ? "/admin" : "/student/profile";
-        const { t } = useTranslation();
+        const { t, i18n } = useTranslation();
+        const activeLanguage = i18n.language;
 
         const mainLinks = [
                 { to: "/", label: t("nav.home") },
@@ -50,7 +51,7 @@ const Navbar = () => {
                                         </Link>
 
                                         <div className='flex flex-col items-center gap-3 text-sm font-medium sm:flex-row sm:justify-end sm:gap-4'>
-                                                <nav className='flex items-center gap-4 text-kingdom-ivory/80'>
+                                                <nav className='flex flex-wrap items-center gap-3 text-kingdom-ivory/80'>
                                                         {mainLinks.map((link) => (
                                                                 <Link
                                                                         key={link.to}
@@ -61,10 +62,7 @@ const Navbar = () => {
                                                                 </Link>
                                                         ))}
                                                         <span className='text-kingdom-ivory/40'>|</span>
-                                                        <Link
-                                                                className='transition-royal focus-outline hover:text-kingdom-gold'
-                                                                to={'/legacy-store'}
-                                                        >
+                                                        <Link className='transition-royal focus-outline hover:text-kingdom-gold' to={'/legacy-store'}>
                                                                 Legacy Store
                                                         </Link>
                                                         {/* TODO: legacy e-commerce shortcuts can be toggled by role */}
@@ -80,13 +78,39 @@ const Navbar = () => {
                                                 </nav>
 
                                                 <div className='flex items-center gap-3'>
+                                                        <div className='flex items-center gap-2 rounded-full border border-kingdom-gold/30 bg-kingdom-purple/40 px-2 py-1 text-xs font-semibold'>
+                                                                {[
+                                                                        { code: "ar", label: "AR" },
+                                                                        { code: "fr", label: "FR" },
+                                                                ].map((lang) => (
+                                                                        <button
+                                                                                key={lang.code}
+                                                                                onClick={() => i18n.changeLanguage(lang.code)}
+                                                                                className={`rounded-full px-2 py-1 transition-royal focus-outline ${
+                                                                                        activeLanguage === lang.code
+                                                                                                ? "bg-kingdom-gold text-kingdom-charcoal"
+                                                                                                : "text-kingdom-ivory/80 hover:text-kingdom-ivory"
+                                                                                }`}
+                                                                                type='button'
+                                                                        >
+                                                                                {lang.label}
+                                                                        </button>
+                                                                ))}
+                                                        </div>
+
                                                         {user ? (
                                                                 <>
                                                                         <Link
                                                                                 to={profileLink}
                                                                                 className='flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:bg-kingdom-purple/70'
                                                                         >
-                                                                                <span className='hidden sm:inline'>Profile</span>
+                                                                                <span className='hidden sm:inline'>
+                                                                                        {user?.role === "tutor"
+                                                                                                ? t("nav.tutorProfile")
+                                                                                                : user?.role === "admin"
+                                                                                                        ? t("nav.adminDashboard")
+                                                                                                        : t("nav.studentProfile")}
+                                                                                </span>
                                                                                 <span className='font-semibold sm:hidden'>{user.name}</span>
                                                                         </Link>
                                                                         <button

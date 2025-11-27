@@ -4,13 +4,7 @@ import GroupCard from "../components/GroupCard";
 import HelpCard from "../components/HelpCard";
 import PartnerCard from "../components/PartnerCard";
 import TutorCard from "../components/TutorCard";
-
-const tabs = [
-        { key: "partner", label: "Partner" },
-        { key: "groups", label: "Groups" },
-        { key: "tutors", label: "Tutors" },
-        { key: "help", label: "Help" },
-];
+import useTranslation from "../hooks/useTranslation";
 
 const defaultFilters = {
         studyMode: "both",
@@ -20,6 +14,7 @@ const defaultFilters = {
 };
 
 const SearchPage = () => {
+        const { t, i18n } = useTranslation();
         const [subjects, setSubjects] = useState([]);
         const [selectedSubject, setSelectedSubject] = useState("");
         const [searchType, setSearchType] = useState("");
@@ -29,9 +24,19 @@ const SearchPage = () => {
         const [filtersOpen, setFiltersOpen] = useState(false);
         const [filters, setFilters] = useState(defaultFilters);
 
+        const tabs = useMemo(
+                () => [
+                        { key: "partner", label: t("search.tabs.partner") },
+                        { key: "groups", label: t("search.tabs.groups") },
+                        { key: "tutors", label: t("search.tabs.tutors") },
+                        { key: "help", label: t("search.tabs.help") },
+                ],
+                [t]
+        );
+
         useEffect(() => {
-                document.title = "Moltaqa – Search";
-        }, []);
+                document.title = t("page.search.title") || "Moltaqa";
+        }, [i18n.language, t]);
 
         useEffect(() => {
                 const fetchSubjects = async () => {
@@ -133,18 +138,21 @@ const SearchPage = () => {
                                 <div className='flex flex-col gap-4 rounded-2xl border border-kingdom-gold/20 bg-black/40 p-4 shadow-royal-soft sm:p-6'>
                                         <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
                                                 <div className='flex flex-col gap-2 sm:w-2/3'>
-                                                        <h1 className='text-3xl font-bold text-kingdom-gold'>Search &amp; Matching</h1>
-                                                        <p className='text-sm text-kingdom-ivory/70'>Find partners, groups, tutors, or help matches tailored to your subject.</p>
+                                                        <h1 className='text-3xl font-bold text-kingdom-gold'>{t("page.search.heading")}</h1>
+                                                        <p className='text-sm text-kingdom-ivory/70'>
+                                                                {t("search.resultsHint")}
+                                                                {/* TODO: extend copy once onboarding content is ready */}
+                                                        </p>
                                                 </div>
                                                 <div className='sm:w-1/3'>
                                                         <label className='flex flex-col gap-2 text-sm text-kingdom-ivory/70'>
-                                                                <span>Select subject</span>
+                                                                <span>{t("search.selectSubject")}</span>
                                                                 <select
                                                                         value={selectedSubject}
                                                                         onChange={(e) => setSelectedSubject(e.target.value)}
                                                                         className='w-full rounded-xl border border-kingdom-gold/30 bg-[#0f0716] px-3 py-2 text-kingdom-ivory outline-none ring-kingdom-gold/40 focus:ring'
                                                                 >
-                                                                        <option value=''>Choose a subject</option>
+                                                                        <option value=''>{t("search.chooseSubject")}</option>
                                                                         {subjects.map((subject) => (
                                                                                 <option key={subject.id} value={subject.id}>
                                                                                         {subject.name}
@@ -156,7 +164,7 @@ const SearchPage = () => {
                                                 </div>
                                         </div>
 
-                                        <div className='flex items-center justify-between gap-3'>
+                                        <div className='flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center'>
                                                 <div className='flex w-full overflow-x-auto rounded-xl border border-kingdom-gold/10 bg-kingdom-purple/30 p-1 text-sm sm:w-auto'>
                                                         {tabs.map((tab) => (
                                                                 <button
@@ -176,7 +184,7 @@ const SearchPage = () => {
                                                         onClick={toggleFilters}
                                                         className='hidden rounded-full border border-kingdom-gold/30 bg-kingdom-purple/40 px-4 py-2 text-sm font-semibold text-kingdom-ivory transition hover:border-kingdom-gold/50 hover:bg-kingdom-purple/70 sm:inline-flex'
                                                 >
-                                                        Filters
+                                                        {t("common.filters")}
                                                 </button>
                                         </div>
 
@@ -184,27 +192,27 @@ const SearchPage = () => {
                                                 onClick={toggleFilters}
                                                 className='sm:hidden rounded-full border border-kingdom-gold/30 bg-kingdom-purple/40 px-4 py-2 text-sm font-semibold text-kingdom-ivory transition hover:border-kingdom-gold/50 hover:bg-kingdom-purple/70'
                                         >
-                                                Filters
+                                                {t("common.filters")}
                                         </button>
                                 </div>
 
                                 <div className='flex flex-col gap-3 rounded-2xl border border-kingdom-gold/10 bg-black/40 p-4 shadow-royal-soft sm:p-6'>
                                         <div className='flex flex-col justify-between gap-2 sm:flex-row sm:items-center'>
                                                 <div>
-                                                        <h2 className='text-xl font-semibold text-kingdom-ivory'>Search results</h2>
-                                                        <p className='text-sm text-kingdom-ivory/60'>Select a subject and a tab to start matching.</p>
+                                                        <h2 className='text-xl font-semibold text-kingdom-ivory'>{t("search.resultsTitle")}</h2>
+                                                        <p className='text-sm text-kingdom-ivory/60'>{t("search.resultsHint")}</p>
                                                 </div>
                                                 {selectedSubject && searchType && (
                                                         <span className='text-sm text-kingdom-ivory/70'>
-                                                                {displayedResults.length} results found
+                                                                {t("search.matchesCount", { count: displayedResults.length })}
                                                         </span>
                                                 )}
                                         </div>
 
                                         {error && <p className='text-sm text-red-400'>{error}</p>}
-                                        {loading && <p className='text-sm text-kingdom-gold'>Loading matches...</p>}
+                                        {loading && <p className='text-sm text-kingdom-gold'>{t("common.loading")}</p>}
                                         {!loading && selectedSubject && searchType && displayedResults.length === 0 && !error && (
-                                                <p className='text-sm text-kingdom-ivory/60'>No matches yet. Try adjusting filters.</p>
+                                                <p className='text-sm text-kingdom-ivory/60'>{t("search.emptyState")}</p>
                                         )}
 
                                         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
@@ -213,7 +221,7 @@ const SearchPage = () => {
 
                                         {!selectedSubject || !searchType ? (
                                                 <p className='rounded-xl border border-dashed border-kingdom-gold/30 bg-kingdom-plum/20 p-4 text-sm text-kingdom-ivory/70'>
-                                                        Select a subject and search type to explore matches.
+                                                        {t("search.startState")}
                                                 </p>
                                         ) : null}
 

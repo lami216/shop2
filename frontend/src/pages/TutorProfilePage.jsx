@@ -5,6 +5,7 @@ import { apiClient } from "../lib/apiClient";
 import { useUserStore } from "../stores/useUserStore";
 import { confirmPayment, getMyPayments, initiatePayment } from "../services/paymentService";
 import TutorBadge from "../components/TutorBadge";
+import useTranslation from "../hooks/useTranslation";
 
 const LEVEL_OPTIONS = [
         { value: "L1", label: "Level 1" },
@@ -218,6 +219,7 @@ const TutorPaymentsPanel = ({ onRefreshProfile }) => {
 };
 
 const TutorProfilePage = () => {
+        const { t, i18n } = useTranslation();
         const user = useUserStore((state) => state.user);
         const [profile, setProfile] = useState(null);
         const [loading, setLoading] = useState(true);
@@ -275,6 +277,10 @@ const TutorProfilePage = () => {
                         setLoading(false);
                 }
         };
+
+        useEffect(() => {
+                document.title = t("page.tutorProfile.title") || "Moltaqa";
+        }, [i18n.language, t]);
 
         useEffect(() => {
                 fetchProfile();
@@ -357,10 +363,8 @@ const TutorProfilePage = () => {
                 <div className='relative min-h-screen bg-gradient-to-b from-[#0A050D] via-kingdom-plum/70 to-[#010104] text-kingdom-cream'>
                         <div className='relative z-10 mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-24 pt-24 sm:px-6 lg:px-8'>
                                 <div className='flex flex-col gap-2'>
-                                        <h1 className='text-4xl font-bold text-kingdom-gold'>ملف المعلم - ملتقى Moltaqa</h1>
-                                        <p className='text-kingdom-cream/70'>
-                                                قم بتحديث بيانات التدريس والأسعار الخاصة بك. TODO: تحسين عرض الشارات والألوان وربط التخصصات والمواد بقوائم حقيقية.
-                                        </p>
+                                        <h1 className='text-4xl font-bold text-kingdom-gold'>{t("page.tutorProfile.heading")}</h1>
+                                        <p className='text-kingdom-cream/70'>{t("tutor.profileSubtitle")}</p>
                                 </div>
 
                                 <div className='grid gap-6 lg:grid-cols-3'>
@@ -377,7 +381,7 @@ const TutorProfilePage = () => {
                                                                         color={profile?.teacherBadge?.color}
                                                                 />
                                                         ) : (
-                                                                <span className='text-xs text-kingdom-cream/60'>لا توجد شارة بعد</span>
+                                                                <span className='text-xs text-kingdom-cream/60'>{t("common.noResults")}</span>
                                                         )}
                                                 </div>
 
