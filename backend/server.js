@@ -15,7 +15,7 @@ import publicConfigRoutes from "./routes/publicConfig.route.js";
 import orderRoutes from "./routes/order.route.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import tutorRoutes from "./routes/tutorRoutes.js";
-import searchRoutes from "./routes/searchRoutes.js";
+import searchRoutes from "./routes/search.route.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
