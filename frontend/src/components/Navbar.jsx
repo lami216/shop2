@@ -15,6 +15,7 @@ const arabesquePattern = encodeURIComponent(
 const Navbar = () => {
         const { user, logout } = useUserStore();
         const isAdmin = user?.role === "admin";
+        const profileLink = user?.role === "tutor" ? "/tutor/profile" : user?.role === "admin" ? "/admin" : "/student/profile";
         const { t } = useTranslation();
 
         const mainLinks = [
@@ -77,13 +78,22 @@ const Navbar = () => {
 
                                                 <div className='flex items-center gap-3'>
                                                         {user ? (
-                                                                <button
-                                                                        className='flex items-center gap-2 rounded-full border border-transparent bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold/40 hover:bg-kingdom-purple/70'
-                                                                        onClick={logout}
-                                                                >
-                                                                        <LogOut size={18} />
-                                                                        <span className='hidden sm:inline'>{t("nav.logout")}</span>
-                                                                </button>
+                                                                <>
+                                                                        <Link
+                                                                                to={profileLink}
+                                                                                className='flex items-center gap-2 rounded-full border border-kingdom-gold/40 bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:bg-kingdom-purple/70'
+                                                                        >
+                                                                                <span className='hidden sm:inline'>Profile</span>
+                                                                                <span className='font-semibold sm:hidden'>{user.name}</span>
+                                                                        </Link>
+                                                                        <button
+                                                                                className='flex items-center gap-2 rounded-full border border-transparent bg-kingdom-purple/40 px-4 py-2 text-kingdom-ivory transition-royal focus-outline hover:border-kingdom-gold/40 hover:bg-kingdom-purple/70'
+                                                                                onClick={logout}
+                                                                        >
+                                                                                <LogOut size={18} />
+                                                                                <span className='hidden sm:inline'>{t("nav.logout")}</span>
+                                                                        </button>
+                                                                </>
                                                         ) : (
                                                                 <>
                                                                         <Link

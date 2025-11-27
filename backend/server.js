@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import path from "node:path";
 import { fileURLToPath } from "url";
 
-import authRoutes from "./routes/auth.route.js";
+import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";

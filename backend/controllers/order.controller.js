@@ -72,7 +72,7 @@ export const getAdminOrders = async (req, res) => {
 
                 const [orders, total] = await Promise.all([
                         Order.find(filters)
-                                .populate("user", "name email phoneNumber role")
+                                .populate("user", "name email phone role")
                                 .populate("products.product", "name price images")
                                 .sort({ [normalizedSortBy]: normalizedSortOrder })
                                 .skip(skip)
