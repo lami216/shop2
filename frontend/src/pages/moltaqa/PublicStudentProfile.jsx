@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { useMessagingStore } from "../../stores/useMessagingStore";
 import { usePublicProfileStore } from "../../stores/usePublicProfileStore";
 
 const studyModeLabels = {
@@ -12,6 +13,8 @@ const studyModeLabels = {
 
 const PublicStudentProfile = () => {
         const { userId } = useParams();
+        const navigate = useNavigate();
+        const { startConversation } = useMessagingStore();
         const { profile, loading, error, fetchPublicProfile } = usePublicProfileStore();
 
         useEffect(() => {
@@ -19,6 +22,12 @@ const PublicStudentProfile = () => {
                         fetchPublicProfile(userId);
                 }
         }, [fetchPublicProfile, userId]);
+
+        const handleStartChat = async () => {
+                if (!profile?.user?._id) return;
+                const convo = await startConversation(profile.user._id);
+                navigate(`/moltaqa/messages/${convo._id}`);
+        };
 
         if (loading) {
                 return <LoadingSpinner />;
@@ -44,7 +53,7 @@ const PublicStudentProfile = () => {
                                         <p className='text-white/70'>{profile.major?.name || "تخصص غير محدد"}</p>
                                 </div>
                                 <button
-                                        onClick={() => console.log("Messaging coming soon")}
+                                        onClick={handleStartChat}
                                         className='self-start rounded-lg bg-payzone-gold px-5 py-2 text-sm font-semibold text-payzone-navy shadow-lg transition duration-300 hover:bg-[#b8873d]'
                                 >
                                         بدء محادثة
