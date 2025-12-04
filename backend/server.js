@@ -15,6 +15,7 @@ import orderRoutes from "./routes/order.route.js";
 import moltaqaLookupRoutes from "./routes/moltaqaLookup.route.js";
 import moltaqaMatchRoutes from "./routes/moltaqaMatch.route.js";
 import moltaqaAdminRoutes from "./routes/moltaqaAdmin.route.js";
+import studentProfileRoutes from "./routes/studentProfile.route.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -43,6 +44,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/moltaqa", moltaqaLookupRoutes);
 app.use("/api/moltaqa", moltaqaMatchRoutes);
 app.use("/api/moltaqa", moltaqaAdminRoutes);
+app.use("/api/moltaqa/student", studentProfileRoutes);
 
 /* ----------------- Production static -----------------
    كان يتم بناء المسار كـ "/var/www/shop1/backend/frontend/dist"
