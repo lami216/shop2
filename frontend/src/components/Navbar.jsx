@@ -47,6 +47,14 @@ const Navbar = () => {
                                                         >
                                                                 {t("nav.home")}
                                                         </Link>
+                                                        {user && (
+                                                                <Link
+                                                                        to={'/moltaqa/dashboard'}
+                                                                        className='text-white/80 transition duration-300 ease-in-out hover:text-payzone-indigo'
+                                                                >
+                                                                        ملتقى
+                                                                </Link>
+                                                        )}
                                                         {isAdmin && (
                                                                 <Link
                                                                         className='flex items-center gap-2 rounded-md bg-payzone-indigo px-3 py-1 text-payzone-white transition duration-300 ease-in-out hover:bg-[#3b3ad6]'
