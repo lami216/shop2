@@ -19,6 +19,9 @@ import { useCartStore } from "./stores/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import StudentDashboard from "./pages/moltaqa/StudentDashboard";
+import EditProfile from "./pages/moltaqa/EditProfile";
+import MatchResults from "./pages/moltaqa/MatchResults";
 
 function App() {
         const user = useUserStore((state) => state.user);
@@ -64,6 +67,9 @@ function App() {
                                         <Route path='/checkout' element={<CheckoutPage />} />
                                         <Route path='/purchase-success' element={<PurchaseSuccessPage />} />
                                         <Route path='/purchase-cancel' element={<PurchaseCancelPage />} />
+                                        <Route path='/moltaqa/dashboard' element={<StudentDashboard />} />
+                                        <Route path='/moltaqa/profile/edit' element={<EditProfile />} />
+                                        <Route path='/moltaqa/matches' element={<MatchResults />} />
                                 </Routes>
                         </div>
                         <Toaster />
