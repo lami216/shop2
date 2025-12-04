@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useMessagingStore } from "../../stores/useMessagingStore";
 import { usePublicProfileStore } from "../../stores/usePublicProfileStore";
+import { socket } from "../../lib/socket";
 
 const studyModeLabels = {
         online: "تعلم إلكتروني",
@@ -26,6 +27,7 @@ const PublicStudentProfile = () => {
         const handleStartChat = async () => {
                 if (!profile?.user?._id) return;
                 const convo = await startConversation(profile.user._id);
+                socket.emit("joinConversation", convo._id);
                 navigate(`/moltaqa/messages/${convo._id}`);
         };
 
