@@ -47,6 +47,12 @@ const Navbar = () => {
                                                         >
                                                                 {t("nav.home")}
                                                         </Link>
+                                                        <Link
+                                                                to={'/moltaqa'}
+                                                                className='text-white/80 transition duration-300 ease-in-out hover:text-[#7ae0e8]'
+                                                        >
+                                                                ملتقى الطلاب
+                                                        </Link>
                                                         {user && (
                                                                 <Link
                                                                         to={'/moltaqa/dashboard'}

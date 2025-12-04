@@ -25,6 +25,7 @@ import MatchResults from "./pages/moltaqa/MatchResults";
 import PublicStudentProfile from "./pages/moltaqa/PublicStudentProfile";
 import ConversationsList from "./pages/moltaqa/messages/ConversationsList";
 import ChatWindow from "./pages/moltaqa/messages/ChatWindow";
+import StudentSearchPage from "./pages/StudentSearchPage";
 
 function App() {
         const user = useUserStore((state) => state.user);
@@ -70,6 +71,7 @@ function App() {
                                         <Route path='/checkout' element={<CheckoutPage />} />
                                         <Route path='/purchase-success' element={<PurchaseSuccessPage />} />
                                         <Route path='/purchase-cancel' element={<PurchaseCancelPage />} />
+                                        <Route path='/moltaqa' element={<StudentSearchPage />} />
                                         <Route path='/moltaqa/dashboard' element={<StudentDashboard />} />
                                         <Route path='/moltaqa/profile/edit' element={<EditProfile />} />
                                         <Route path='/moltaqa/matches' element={<MatchResults />} />
