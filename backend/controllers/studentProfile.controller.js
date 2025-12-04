@@ -121,14 +121,23 @@ export const publicGetStudentProfile = async (req, res) => {
         try {
                 const { userId } = req.params;
 
-                const profileQuery = populateProfile(StudentProfile.findOne({ user: userId, isVisible: true }));
+                const profileQuery = populateProfile(StudentProfile.findOne({ user: userId }));
                 const profile = await profileQuery.lean();
 
                 if (!profile) {
                         return res.status(404).json({ message: "Profile not found" });
                 }
 
-                res.json({ profile });
+                if (profile.isVisible === false) {
+                        return res.status(404).json({ message: "Profile not visible" });
+                }
+
+                const { user, college, major, level, subjects, studyModes, bio, availability, isVisible, createdAt, updatedAt } =
+                        profile;
+
+                res.json({
+                        profile: { user, college, major, level, subjects, studyModes, bio, availability, isVisible, createdAt, updatedAt },
+                });
         } catch (error) {
                 console.error("Error in publicGetStudentProfile", error);
                 res.status(500).json({ message: "Server error", error: error.message });

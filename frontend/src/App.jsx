@@ -22,6 +22,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import StudentDashboard from "./pages/moltaqa/StudentDashboard";
 import EditProfile from "./pages/moltaqa/EditProfile";
 import MatchResults from "./pages/moltaqa/MatchResults";
+import PublicStudentProfile from "./pages/moltaqa/PublicStudentProfile";
 
 function App() {
         const user = useUserStore((state) => state.user);
@@ -70,6 +71,7 @@ function App() {
                                         <Route path='/moltaqa/dashboard' element={<StudentDashboard />} />
                                         <Route path='/moltaqa/profile/edit' element={<EditProfile />} />
                                         <Route path='/moltaqa/matches' element={<MatchResults />} />
+                                        <Route path='/moltaqa/student/:userId' element={<PublicStudentProfile />} />
                                 </Routes>
                         </div>
                         <Toaster />
