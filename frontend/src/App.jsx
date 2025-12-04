@@ -23,6 +23,8 @@ import StudentDashboard from "./pages/moltaqa/StudentDashboard";
 import EditProfile from "./pages/moltaqa/EditProfile";
 import MatchResults from "./pages/moltaqa/MatchResults";
 import PublicStudentProfile from "./pages/moltaqa/PublicStudentProfile";
+import ConversationsList from "./pages/moltaqa/messages/ConversationsList";
+import ChatWindow from "./pages/moltaqa/messages/ChatWindow";
 
 function App() {
         const user = useUserStore((state) => state.user);
@@ -72,6 +74,8 @@ function App() {
                                         <Route path='/moltaqa/profile/edit' element={<EditProfile />} />
                                         <Route path='/moltaqa/matches' element={<MatchResults />} />
                                         <Route path='/moltaqa/student/:userId' element={<PublicStudentProfile />} />
+                                        <Route path='/moltaqa/messages' element={<ConversationsList />} />
+                                        <Route path='/moltaqa/messages/:conversationId' element={<ChatWindow />} />
                                 </Routes>
                         </div>
                         <Toaster />
