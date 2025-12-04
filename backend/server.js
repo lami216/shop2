@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import path from "path";
+import http from "http";
+import { Server } from "socket.io";
 
 import authRoutes from "./routes/auth.route.js";
 import productRoutes from "./routes/product.route.js";
@@ -17,6 +19,7 @@ import moltaqaMatchRoutes from "./routes/moltaqaMatch.route.js";
 import moltaqaAdminRoutes from "./routes/moltaqaAdmin.route.js";
 import studentProfileRoutes from "./routes/studentProfile.route.js";
 import messageRoutes from "./routes/message.route.js";
+import messagingSocket from "./socket/messaging.socket.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -24,6 +27,16 @@ dotenv.config({ path: "./backend/.env" });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+messagingSocket(io);
 
 // في ESM هذا يُعيد المسار الحالي للعملية (غالبًا /var/www/shop1/backend)
 const __dirname = path.resolve();
@@ -62,7 +75,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
-  console.log("Server is running on http://localhost:" + PORT);
+server.listen(PORT, () => {
+  console.log("Server running on http://localhost:" + PORT);
   connectDB();
 });
