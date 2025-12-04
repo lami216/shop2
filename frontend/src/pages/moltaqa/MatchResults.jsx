@@ -244,7 +244,7 @@ const MatchResults = () => {
                                                                 </div>
                                                         </div>
                                                         <Link
-                                                                to={`/moltaqa/student/${match.userId || match._id}`}
+                                                                to={`/moltaqa/student/${match.user?._id}`}
                                                                 className='mt-4 inline-flex items-center justify-center rounded-lg bg-payzone-indigo px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3b3ad6]'
                                                         >
                                                                 عرض الملف
